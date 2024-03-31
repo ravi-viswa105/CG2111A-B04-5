@@ -11,11 +11,12 @@
 // Packet types
 typedef enum
 {
-  PACKET_TYPE_COMMAND = 0,
-  PACKET_TYPE_RESPONSE = 1,
-  PACKET_TYPE_ERROR = 2,
-  PACKET_TYPE_MESSAGE = 3,
-  PACKET_TYPE_HELLO = 4
+  PACKET_TYPE_COMMAND_PARAM = 0,
+  PACKET_TYPE_COMMAND_KEYBOARD = 1;
+  PACKET_TYPE_RESPONSE = 2,
+  PACKET_TYPE_ERROR = 3,
+  PACKET_TYPE_MESSAGE = 4,
+  PACKET_TYPE_HELLO = 5
 } TPacketType;
 
 // Response types. This goes into the command field
