@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <unistd.h>
-#include <stdint.h>
-#include "packet.h"
-#include "serial.h"
-#include "serialize.h"
-#include "constants.h"
+#include "usart.h"
 
 void handleError(TResult error)
 {
@@ -94,10 +86,12 @@ void handlePacket(TPacket *packet)
 {
 	switch(packet->packetType)
 	{
-		case PACKET_TYPE_COMMAND:
+		case PACKET_TYPE_COMMAND_PARAM:
 				// Only we send command packets, so ignore
 			break;
-
+		case PACKET_TYPE_COMMAND_KEYBOARD:
+				// Only we send command packets, so ignore
+			break;
 		case PACKET_TYPE_RESPONSE:
 				handleResponse(packet);
 			break;
