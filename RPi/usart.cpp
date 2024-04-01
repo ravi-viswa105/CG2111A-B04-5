@@ -166,29 +166,27 @@ void sendCommand(char command)
 
 	switch(command)
 	{
-        case -1:
-            commandPacket.command = COMMAND_STOP;
-			sendPacket(&commandPacket);
-			break;
-            
         // Changing the movement mode
         case '1':
             flushInput();
             keyboardMode = 1;
             // Revert to normal, buffered input
             nocbreak();
+	    endwin();
             break;
 
         case '2':
             flushInput();
             keyboardMode = 2;
             // Do not wait for Enter to be pressed
+	    initscr();
             cbreak();
             break;
 
-        // Movement
+               // Movement
 		case 'w':
 		case 'W':
+	    		printf("forward\n\r");
 			getParams(&commandPacket);
 			commandPacket.command = COMMAND_FORWARD;
 			sendPacket(&commandPacket);
@@ -215,7 +213,14 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
-        // Stats
+		case 'o':
+		case 'O':
+			printf("stop\n\r");
+			commandPacket,command = COMMAND_STOP;
+			sendPacket(&commandPacket);
+			break;
+
+               // Stats
 		case 'c':
 		case 'C':
 			commandPacket.command = COMMAND_CLEAR_STATS;

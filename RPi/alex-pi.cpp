@@ -11,7 +11,7 @@
 
 #include <ncurses.h>
 
-#define PORT_NAME			"/dev/ttyACM0"
+#define PORT_NAME			"/dev/ttyACM1"
 #define BAUD_RATE			B9600
 
 int exitFlag=0;
@@ -28,7 +28,7 @@ void flushInput()
 
 void paramsControl() {
 	char ch;
-	printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, c=clear stats, g=get stats q=exit)\n");
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
 	printf("Mode: 1=param control, 2=keyboard control\n");
 	scanf("%c", &ch);
 
@@ -41,25 +41,24 @@ void paramsControl() {
 void keypressControl() {
 	char c = getch();
 
-	if (!movementFlag) { // Robot is not moving (no key pressed)
-		movementFlag = 1;
+	if (!movementFlag) {
+		// If it is not moving and a movement command is sent
+		if (c == 'w' || c == 'a' || c == 's' || c == 'd') { 
+			printf("starting\n\r");
+			movementFlag = 1;
+		}
+
 		sendCommand(c);
-	} else if (movementFlag && (c == -1)) { // If robot is moving and key is released
-		sendCommand(c);
+	} else if (movementFlag && (c == -1)) { 
+		// If robot is moving and key is released
+		printf("stopping\n\r");
+		movementFlag = 0;
+		sendCommand('o');
 	}
 }
 
 int main()
 {
-	// Set up terminal	
-    initscr(); // Initialize the screen and sets up memory, but does not clear the screen
-    noecho(); // Do not echo keypresses to the screen
-	if (keyboardMode == 1) {
-		nocbreak();
-	} else if (keyboardMode == 2) {
-		cbreak();
-	}
-
 	// ERR (-1) if no input is ready and nodelay() is enabled, or if an error occurs.
 	nodelay(stdscr, TRUE); // make getch() non-blocking
 
@@ -82,6 +81,15 @@ int main()
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
 
+	// Set up terminal	
+	if (keyboardMode == 1) {
+		cbreak();
+	} else if (keyboardMode == 2) {
+        	initscr(); // Initialize the screen and sets up memory, but does not clear the screen
+		nocbreak();
+	}
+
+
 	while(!exitFlag)
 	{
 		if (keyboardMode == 1) {
@@ -91,7 +99,7 @@ int main()
 		}
 	}
 
-    echo(); // Re-enable echoing of keypresses
+        echo(); // Re-enable echoing of keypresses
 	endwin(); // Clean up the ncurses data structures
 
 	printf("Closing connection to Arduino.\n");
