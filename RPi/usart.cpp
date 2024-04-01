@@ -170,17 +170,13 @@ void sendCommand(char command)
         case '1':
             flushInput();
             keyboardMode = 1;
-            // Revert to normal, buffered input
-            nocbreak();
-	    endwin();
+			nocbreak();
             break;
 
         case '2':
             flushInput();
             keyboardMode = 2;
-            // Do not wait for Enter to be pressed
-	    initscr();
-            cbreak();
+			nocbreak();
             break;
 
                // Movement

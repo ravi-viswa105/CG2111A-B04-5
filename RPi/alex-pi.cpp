@@ -49,7 +49,7 @@ void keypressControl() {
 		}
 
 		sendCommand(c);
-	} else if (movementFlag && (c == -1)) { 
+	} else if (movementFlag && (c == ERR)) { 
 		// If robot is moving and key is released
 		printf("stopping\n\r");
 		movementFlag = 0;
@@ -59,9 +59,6 @@ void keypressControl() {
 
 int main()
 {
-	// ERR (-1) if no input is ready and nodelay() is enabled, or if an error occurs.
-	nodelay(stdscr, TRUE); // make getch() non-blocking
-
 	// Connect to the Arduino
 	startSerial(PORT_NAME, BAUD_RATE, 8, 'N', 1, 5);
 
@@ -82,13 +79,14 @@ int main()
 	sendPacket(&helloPacket);
 
 	// Set up terminal	
+    initscr(); // Initialize the screen and sets up memory, but does not clear the screen
+	nodelay(stdscr, TRUE); // make getch() non-blocking
+	
 	if (keyboardMode == 1) {
-		cbreak();
-	} else if (keyboardMode == 2) {
-        	initscr(); // Initialize the screen and sets up memory, but does not clear the screen
 		nocbreak();
+	} else {
+		cbreak();
 	}
-
 
 	while(!exitFlag)
 	{
@@ -99,8 +97,8 @@ int main()
 		}
 	}
 
-        echo(); // Re-enable echoing of keypresses
-	endwin(); // Clean up the ncurses data structures
+    //echo(); // Re-enable echoing of keypresses
+	endwin();
 
 	printf("Closing connection to Arduino.\n");
 	endSerial();
