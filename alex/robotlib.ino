@@ -45,7 +45,8 @@ void move(float speed, int direction)
         motorBL.run(BACKWARD);
         motorBR.run(FORWARD); 
     break;
-      case STOP:     
+      case STOP:
+      
         motorFL.run(STOP);
         motorFR.run(STOP);
         motorBL.run(STOP);
@@ -86,7 +87,7 @@ unsigned long computeDeltaTicks(float ang){
   return ticks;
 }
 
-void ccw(float dist, float speed)//left
+void ccw(float speed)//left
 {
   dir = (TDirection) CCW;
   move(speed, CCW);
@@ -99,10 +100,10 @@ void left(float ang , float speed){
     deltaTicks=computeDeltaTicks(ang);
     targetTicks = leftReverseTurns + deltaTicks;
   }
-  ccw(ang,speed);
+  ccw(speed);
 }
 
-void cw(float dist, float speed)//right
+void cw(float speed)//right
 {
   dir = (TDirection) CW;
   move(speed, CW);
@@ -115,7 +116,7 @@ void right(float ang , float speed){
     deltaTicks=computeDeltaTicks(ang);
     targetTicks = rightReverseTurns + deltaTicks;
   }
-  cw(ang,speed);
+  cw(speed);
 }
 
 void stop()

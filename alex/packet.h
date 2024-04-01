@@ -7,11 +7,13 @@
 // This packet has 1 + 1 + 2 + 32 + 16 * 4 = 100 bytes
 typedef struct
 {
+
 	char packetType;
 	char command;
 	char dummy[2]; // Padding to make up 4 bytes
 	char data[MAX_STR_LEN]; // String data
 	uint32_t params[16];
 } TPacket;
+
 
 #endif
