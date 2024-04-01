@@ -11,7 +11,7 @@
 
 #include <ncurses.h>
 
-#define PORT_NAME			"/dev/ttyACM1"
+#define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
 
 int exitFlag=0;
@@ -39,22 +39,24 @@ void paramsControl() {
 }
 
 void keypressControl() {
-	char c = getch();
+	int c = getch();
+	putchar(char(c));
+	printf("\n\r");
 
-	if (!movementFlag) {
+	if (!movementFlag &&  (c == 'w' || c == 'a' || c == 's' || c == 'd')) {
 		// If it is not moving and a movement command is sent
-		if (c == 'w' || c == 'a' || c == 's' || c == 'd') { 
-			printf("starting\n\r");
-			movementFlag = 1;
-		}
-
-		sendCommand(c);
+		printf("moving\n\r");
+		movementFlag = 1;
+		sendCommand((char)c);
 	} else if (movementFlag && (c == ERR)) { 
 		// If robot is moving and key is released
 		printf("stopping\n\r");
 		movementFlag = 0;
 		sendCommand('o');
+	} else if (c != ERR) {
+		sendCommand((char)c);
 	}
+	sleep(1);
 }
 
 int main()
@@ -81,6 +83,7 @@ int main()
 	// Set up terminal	
     initscr(); // Initialize the screen and sets up memory, but does not clear the screen
 	nodelay(stdscr, TRUE); // make getch() non-blocking
+	keypad(stdscr, TRUE);
 	
 	if (keyboardMode == 1) {
 		nocbreak();

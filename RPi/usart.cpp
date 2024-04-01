@@ -182,7 +182,6 @@ void sendCommand(char command)
                // Movement
 		case 'w':
 		case 'W':
-	    		printf("forward\n\r");
 			getParams(&commandPacket);
 			commandPacket.command = COMMAND_FORWARD;
 			sendPacket(&commandPacket);
@@ -211,7 +210,6 @@ void sendCommand(char command)
 
 		case 'o':
 		case 'O':
-			printf("stop\n\r");
 			commandPacket,command = COMMAND_STOP;
 			sendPacket(&commandPacket);
 			break;
