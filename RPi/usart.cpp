@@ -151,7 +151,6 @@ void getParams(TPacket *commandPacket)
 	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
 	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
 	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
-	flushInput();
 }
 
 void sendCommand(char command)
@@ -168,12 +167,10 @@ void sendCommand(char command)
 	{
         // Changing the movement mode
         case '1':
-            flushInput();
             keyboardMode = 1;
             break;
 
         case '2':
-            flushInput();
             keyboardMode = 2;
             break;
 

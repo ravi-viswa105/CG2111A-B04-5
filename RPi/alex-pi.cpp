@@ -8,7 +8,7 @@
 #include "serialize.h"
 #include "constants.h"
 #include "usart.h"
-
+#include <ncurses.h>
 #include <termios.h>
 
 #define PORT_NAME			"/dev/ttyACM0"
@@ -17,48 +17,24 @@
 int exitFlag=0;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode=1;
-int movementFlag=0;
+bool movementFlag=0;
+int counter_hit = 0;
+int counter_nohit = 0;
+
 sem_t _xmitSema;
 
-void flushInput()
-{
-	char c;
-	while((c = getchar()) != '\n' && c != EOF);
+int kbhit(void){
+	int ch = getch();
+
+	if(ch != ERR){
+		ungetch(ch);
+		return 1;
+	}else{
+		return 0;
+	}
 }
 
-char getcharacter() {
-	char buf = 0;
-	struct termios old = {0};
-	if (tcgetattr(0, &old) < 0)
-		perror("tcsetattr()");
-	old.c_lflag &= ~ICANON;
-	old.c_lflag &= ~ECHO;
-	old.c_cc[VMIN] = 1;
-	old.c_cc[VTIME] = 0;
-	if (tcsetattr(0, TCSANOW, &old) < 0)
-		perror("tcsetattr ICANON");
-	if (read(0, &buf, 1) < 0)
-		perror ("read()");
-	old.c_lflag |= ICANON;
-	old.c_lflag |= ECHO;
-	if (tcsetattr(0, TCSADRAIN, &old) < 0)
-		perror ("tcsetattr ~ICANON");
-	return (buf);
-}
-
-void paramsControl() {
-	char ch;
-	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
-	printf("Mode: 1=param control, 2=keyboard control\n");
-	scanf("%c", &ch);
-
-	// Purge extraneous characters from input stream
-	flushInput();
-
-	sendCommand(ch);
-}
-
-void keypressControl() {
+/*
 	char c = getcharacter();
 
 	if (!movementFlag) {
@@ -74,7 +50,39 @@ void keypressControl() {
 		printf("stopping\n\r");
 		movementFlag = 0;
 		sendCommand('o');
+}*/
+void paramsControl() {
+	char ch;
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
+	printf("Mode: 1=param control, 2=keyboard control\n");
+	scanf("%c", &ch);
+
+	// Purge extraneous characters from input stream
+	fflush(stdin);//CHECK
+	sendCommand(ch);
+}
+
+void keypressControl() {
+	if(kbhit()){
+		counter_hit ++;
+		if(!movementFlag && counter_hit >= 20){
+			char c = getch();
+                        sendCommand(c);
+			movementFlag = true;
+			counter_nohit = 0;
+		}
+		refresh();
+	}else {
+		counter_nohit ++;
+		if(movementFlag && counter_nohit >= 20){
+			sendCommand('o');
+			counter_hit = 0;
+			movementFlag = false;
+		}
+		refresh();
 	}
+	usleep(5000);
+	fflush(stdin);
 }
 
 int main()
@@ -97,6 +105,11 @@ int main()
 
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
+	initscr();
+	cbreak();
+	noecho();
+	nodelay(stdscr , TRUE);
+	scrollok(stdscr , TRUE);
 
 	while(!exitFlag)
 	{
