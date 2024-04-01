@@ -9,7 +9,7 @@
 #include "constants.h"
 #include "usart.h"
 
-#include <ncurses.h>
+#include <termios.h>
 
 #define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
@@ -26,6 +26,26 @@ void flushInput()
 	while((c = getchar()) != '\n' && c != EOF);
 }
 
+char getcharacter() {
+	char buf = 0;
+	struct termios old = {0};
+	if (tcgetattr(0, &old) < 0)
+		perror("tcsetattr()");
+	old.c_lflag &= ~ICANON;
+	old.c_lflag &= ~ECHO;
+	old.c_cc[VMIN] = 1;
+	old.c_cc[VTIME] = 0;
+	if (tcsetattr(0, TCSANOW, &old) < 0)
+		perror("tcsetattr ICANON");
+	if (read(0, &buf, 1) < 0)
+		perror ("read()");
+	old.c_lflag |= ICANON;
+	old.c_lflag |= ECHO;
+	if (tcsetattr(0, TCSADRAIN, &old) < 0)
+		perror ("tcsetattr ~ICANON");
+	return (buf);
+}
+
 void paramsControl() {
 	char ch;
 	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
@@ -39,24 +59,22 @@ void paramsControl() {
 }
 
 void keypressControl() {
-	int c = getch();
-	putchar(char(c));
-	printf("\n\r");
+	char c = getcharacter();
 
-	if (!movementFlag &&  (c == 'w' || c == 'a' || c == 's' || c == 'd')) {
+	if (!movementFlag) {
 		// If it is not moving and a movement command is sent
-		printf("moving\n\r");
-		movementFlag = 1;
-		sendCommand((char)c);
-	} else if (movementFlag && (c == ERR)) { 
+		if (c == 'w' || c == 'a' || c == 's' || c == 'd') { 
+			printf("starting\n\r");
+			movementFlag = 1;
+		}
+
+		sendCommand(c);
+	} else if (movementFlag && (c == -1)) { 
 		// If robot is moving and key is released
 		printf("stopping\n\r");
 		movementFlag = 0;
 		sendCommand('o');
-	} else if (c != ERR) {
-		sendCommand((char)c);
 	}
-	sleep(1);
 }
 
 int main()
@@ -80,17 +98,6 @@ int main()
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
 
-	// Set up terminal	
-    initscr(); // Initialize the screen and sets up memory, but does not clear the screen
-	nodelay(stdscr, TRUE); // make getch() non-blocking
-	keypad(stdscr, TRUE);
-	
-	if (keyboardMode == 1) {
-		nocbreak();
-	} else {
-		cbreak();
-	}
-
 	while(!exitFlag)
 	{
 		if (keyboardMode == 1) {
@@ -99,9 +106,6 @@ int main()
 			keypressControl();
 		}
 	}
-
-    //echo(); // Re-enable echoing of keypresses
-	endwin();
 
 	printf("Closing connection to Arduino.\n");
 	endSerial();

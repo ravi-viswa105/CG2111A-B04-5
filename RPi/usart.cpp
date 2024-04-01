@@ -170,13 +170,11 @@ void sendCommand(char command)
         case '1':
             flushInput();
             keyboardMode = 1;
-			nocbreak();
             break;
 
         case '2':
             flushInput();
             keyboardMode = 2;
-			nocbreak();
             break;
 
                // Movement
