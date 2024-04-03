@@ -174,11 +174,11 @@ void handleCommandKeyboard(TPacket *command)
       break;
     case COMMAND_TURN_LEFT:
         sendOK();
-        left(-1, 100);
+        left(0, 100);
       break;
     case COMMAND_TURN_RIGHT:
         sendOK();
-        right(-1, 100);
+        right(0, 100);
       break;
     case COMMAND_STOP:
         sendOK();
