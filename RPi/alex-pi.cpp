@@ -10,6 +10,11 @@
 #include "usart.h"
 #include <ncurses.h>
 #include <termios.h>
+#include <iostream>
+#include <immintrin.h>
+#include <SDL2/SDL.h>
+using namespace std;
+
 
 #define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
@@ -17,73 +22,62 @@
 int exitFlag=0;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode=1;
-bool movementFlag=0;
-int counter_hit = 0;
-int counter_nohit = 0;
-
 sem_t _xmitSema;
 
-int kbhit(void){
-	int ch = getch();
 
-	if(ch != ERR){
-		ungetch(ch);
-		return 1;
-	}else{
-		return 0;
-	}
-}
-
-/*
-	char c = getcharacter();
-
-	if (!movementFlag) {
-		// If it is not moving and a movement command is sent
-		if (c == 'w' || c == 'a' || c == 's' || c == 'd') { 
-			printf("starting\n\r");
-			movementFlag = 1;
-		}
-
-		sendCommand(c);
-	} else if (movementFlag && (c == -1)) { 
-		// If robot is moving and key is released
-		printf("stopping\n\r");
-		movementFlag = 0;
-		sendCommand('o');
-}*/
 void paramsControl() {
 	char ch;
 	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
 	printf("Mode: 1=param control, 2=keyboard control\n");
 	scanf("%c", &ch);
-
-	// Purge extraneous characters from input stream
-	fflush(stdin);//CHECK
+        printf("send command : %c\n" , ch);
 	sendCommand(ch);
 }
 
 void keypressControl() {
-	if(kbhit()){
-		counter_hit ++;
-		if(!movementFlag && counter_hit >= 20){
-			char c = getch();
-                        sendCommand(c);
-			movementFlag = true;
-			counter_nohit = 0;
-		}
-		refresh();
-	}else {
-		counter_nohit ++;
-		if(movementFlag && counter_nohit >= 20){
-			sendCommand('o');
-			counter_hit = 0;
-			movementFlag = false;
-		}
-		refresh();
-	}
-	usleep(5000);
-	fflush(stdin);
+	SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window* window = SDL_CreateWindow("Keyboard Input", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    SDL_Event event;
+    bool quit = false;
+    bool keyAlreadyPressed = false;
+    bool stop = false;
+
+    while (!quit) {
+        while (SDL_PollEvent(&event) && !stop) {
+            if (event.type == SDL_QUIT) {
+                quit = true;
+            }
+            else if (event.type == SDL_KEYUP) {
+                cout << "car stopped" << endl;
+		    keyAlreadyPressed = false;
+		    sendCommand('o');
+            }
+            else if (event.type == SDL_KEYDOWN && !keyAlreadyPressed) {
+                keyAlreadyPressed = true;
+                switch(event.key.keysym.sym){
+			case SDLK_1 :
+                        	quit = true;
+                        	stop = true;
+				keyboardMode = 1;
+				break;
+			default :
+				const char* string=  SDL_GetKeyName(event.key.keysym.sym);	
+                                printf("send command : %c\n" , string[0]);
+				sendCommand(string[0]);
+
+                }
+	    }
+        }
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
+    }
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
+
 
 int main()
 {
@@ -105,11 +99,6 @@ int main()
 
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
-	initscr();
-	cbreak();
-	noecho();
-	nodelay(stdscr , TRUE);
-	scrollok(stdscr , TRUE);
 
 	while(!exitFlag)
 	{
@@ -123,3 +112,18 @@ int main()
 	printf("Closing connection to Arduino.\n");
 	endSerial();
 }
+
+/*
+case SDLK_w : 
+	cout << "car moving forward" << endl;
+	break;
+case SDLK_a :
+        cout << "car turning left" << endl;
+        break;
+case SDLK_s :
+        cout << "car reversing" << endl;
+        break;
+case SDLK_d :
+        cout << "car turning right" << endl;
+        break;
+*/
