@@ -11,7 +11,6 @@
 #include <ncurses.h>
 #include <termios.h>
 #include <iostream>
-#include <immintrin.h>
 #include <SDL2/SDL.h>
 using namespace std;
 
