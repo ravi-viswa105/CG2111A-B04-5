@@ -205,7 +205,7 @@ void sendCommand(char command)
 
 		case 'o':
 		case 'O':
-			commandPacket,command = COMMAND_STOP;
+			commandPacket.command = COMMAND_STOP;
 			sendPacket(&commandPacket);
 			break;
 
