@@ -1,4 +1,5 @@
 #include "usart.h"
+#include "colour.h"
 
 void handleError(TResult error)
 {
@@ -45,6 +46,11 @@ void handleResponse(TPacket *packet)
 		case RESP_STATUS:
 			handleStatus(packet);
 		break;
+
+		case RESP_COLOR:
+			handleColor(packet);
+		break;
+
 
 		default:
 			printf("Arduino is confused\n");
@@ -220,6 +226,13 @@ void sendCommand(char command)
 		case 'g':
 		case 'G':
 			commandPacket.command = COMMAND_GET_STATS;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'v':
+		case 'V':
+			printf("GET COLOR\n");
+			commandPacket.command = COMMAND_COLOR;
 			sendPacket(&commandPacket);
 			break;
 

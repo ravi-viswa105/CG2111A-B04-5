@@ -153,7 +153,13 @@ void handleCommandParam(TPacket *command)
     case COMMAND_CLEAR_STATS:
         sendOK();
         clearCounters();
-      break;        
+      break;
+    case COMMAND_COLOR:
+      findColor();
+      sendColor();
+      sendOK();
+      break;
+        
     default:
       sendBadCommand();
   }
@@ -191,7 +197,13 @@ void handleCommandKeyboard(TPacket *command)
     case COMMAND_CLEAR_STATS:
         sendOK();
         clearCounters();
-      break;        
+      break;
+    case COMMAND_COLOR:
+      findColor();
+      sendColor();
+      sendOK();
+      break;
+        
     default:
       sendBadCommand();
   }

@@ -3,15 +3,16 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <ncurses.h>
+#include <termios.h>
+#include <iostream>
+#include <SDL2/SDL.h>
 #include "packet.h"
 #include "serial.h"
 #include "serialize.h"
 #include "constants.h"
 #include "usart.h"
-#include <ncurses.h>
-#include <termios.h>
-#include <iostream>
-#include <SDL2/SDL.h>
+#include "colour.h"
 using namespace std;
 
 
