@@ -257,6 +257,4 @@ void loop() {
   } else if (result == PACKET_CHECKSUM_BAD) {
     sendBadChecksum();
   }
-
-  findColour();
 }

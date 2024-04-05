@@ -121,7 +121,7 @@ void sendResponse(TPacket *packet)
   writeSerial(buffer, len);
 }
 
-void handleCommand(TPacket *command)
+void handleCommandParam(TPacket *command)
 {
   switch(command->command)
   {
@@ -159,14 +159,56 @@ void handleCommand(TPacket *command)
   }
 }
 
+void handleCommandKeyboard(TPacket *command)
+{
+  switch(command->command)
+  {
+    // For movement commands, param[0] = distance, param[1] = speed.
+    case COMMAND_FORWARD:
+        sendOK();
+        forward(-1, 100);
+      break;
+    case COMMAND_REVERSE:
+        sendOK();
+        backward(-1, 100);
+      break;
+    case COMMAND_TURN_LEFT:
+        sendOK();
+        left(0, 100);
+      break;
+    case COMMAND_TURN_RIGHT:
+        sendOK();
+        right(0, 100);
+      break;
+    case COMMAND_STOP:
+        sendOK();
+        stop();
+      break;
+    case COMMAND_GET_STATS:
+        sendOK();
+        sendStatus();
+      break;
+    case COMMAND_CLEAR_STATS:
+        sendOK();
+        clearCounters();
+      break;        
+    default:
+      sendBadCommand();
+  }
+}
+
 void handlePacket(TPacket *packet)
 {
   switch(packet->packetType)
   {
-    case PACKET_TYPE_COMMAND:
-      handleCommand(packet);
+    case PACKET_TYPE_COMMAND_PARAM:
+      handleCommandParam(packet);
       break;
 
+    case PACKET_TYPE_COMMAND_KEYBOARD:
+      handleCommandKeyboard(packet);
+      break;
+    
     case PACKET_TYPE_RESPONSE:
       break;
 

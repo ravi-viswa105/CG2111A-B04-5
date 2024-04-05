@@ -7,236 +7,76 @@
 #include "serial.h"
 #include "serialize.h"
 #include "constants.h"
+#include "usart.h"
+#include <ncurses.h>
+#include <termios.h>
+#include <iostream>
+#include <SDL2/SDL.h>
+using namespace std;
+
 
 #define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
 
 int exitFlag=0;
+// 1 for controlling with params, 2 for controlling with keypress
+int keyboardMode=1;
 sem_t _xmitSema;
 
-void handleError(TResult error)
-{
-	switch(error)
-	{
-		case PACKET_BAD:
-			printf("ERROR: Bad Magic Number\n");
-			break;
 
-		case PACKET_CHECKSUM_BAD:
-			printf("ERROR: Bad checksum\n");
-			break;
-
-		default:
-			printf("ERROR: UNKNOWN ERROR\n");
-	}
+void paramsControl() {
+	char ch;
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
+	printf("Mode: 1=param control, 2=keyboard control\n");
+	scanf("%c", &ch);
+        printf("send command : %c\n" , ch);
+	sendCommand(ch);
 }
 
-void handleStatus(TPacket *packet)
-{
-	printf("\n ------- ALEX STATUS REPORT ------- \n\n");
-	printf("Left Forward Ticks:\t\t%d\n", packet->params[0]);
-	printf("Right Forward Ticks:\t\t%d\n", packet->params[1]);
-	printf("Left Reverse Ticks:\t\t%d\n", packet->params[2]);
-	printf("Right Reverse Ticks:\t\t%d\n", packet->params[3]);
-	printf("Left Forward Ticks Turns:\t%d\n", packet->params[4]);
-	printf("Right Forward Ticks Turns:\t%d\n", packet->params[5]);
-	printf("Left Reverse Ticks Turns:\t%d\n", packet->params[6]);
-	printf("Right Reverse Ticks Turns:\t%d\n", packet->params[7]);
-	printf("Forward Distance:\t\t%d\n", packet->params[8]);
-	printf("Reverse Distance:\t\t%d\n", packet->params[9]);
-	printf("\n---------------------------------------\n\n");
+void keypressControl() {
+	SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window* window = SDL_CreateWindow("Keyboard Input", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    SDL_Event event;
+    bool quit = false;
+    bool keyAlreadyPressed = false;
+    bool stop = false;
+
+    while (!quit) {
+        while (SDL_PollEvent(&event) && !stop) {
+            if (event.type == SDL_QUIT) {
+                quit = true;
+            }
+            else if (event.type == SDL_KEYUP) {
+                cout << "car stopped" << endl;
+		    keyAlreadyPressed = false;
+		    sendCommand('o');
+            }
+            else if (event.type == SDL_KEYDOWN && !keyAlreadyPressed) {
+                keyAlreadyPressed = true;
+                switch(event.key.keysym.sym){
+			case SDLK_1 :
+                        	quit = true;
+                        	stop = true;
+				keyboardMode = 1;
+				break;
+			default :
+				const char* string=  SDL_GetKeyName(event.key.keysym.sym);	
+                                printf("send command : %c\n" , string[0]);
+				sendCommand(string[0]);
+
+                }
+	    }
+        }
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
+    }
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
-void handleResponse(TPacket *packet)
-{
-	// The response code is stored in command
-	switch(packet->command)
-	{
-		case RESP_OK:
-			printf("Command OK\n");
-		break;
-
-		case RESP_STATUS:
-			handleStatus(packet);
-		break;
-
-		default:
-			printf("Arduino is confused\n");
-	}
-}
-
-void handleErrorResponse(TPacket *packet)
-{
-	// The error code is returned in command
-	switch(packet->command)
-	{
-		case RESP_BAD_PACKET:
-			printf("Arduino received bad magic number\n");
-		break;
-
-		case RESP_BAD_CHECKSUM:
-			printf("Arduino received bad checksum\n");
-		break;
-
-		case RESP_BAD_COMMAND:
-			printf("Arduino received bad command\n");
-		break;
-
-		case RESP_BAD_RESPONSE:
-			printf("Arduino received unexpected response\n");
-		break;
-
-		default:
-			printf("Arduino reports a weird error\n");
-	}
-}
-
-void handleMessage(TPacket *packet)
-{
-	printf("Message from Alex: %s\n", packet->data);
-}
-
-void handlePacket(TPacket *packet)
-{
-	switch(packet->packetType)
-	{
-		case PACKET_TYPE_COMMAND:
-				// Only we send command packets, so ignore
-			break;
-
-		case PACKET_TYPE_RESPONSE:
-				handleResponse(packet);
-			break;
-
-		case PACKET_TYPE_ERROR:
-				handleErrorResponse(packet);
-			break;
-
-		case PACKET_TYPE_MESSAGE:
-				handleMessage(packet);
-			break;
-	}
-}
-
-void sendPacket(TPacket *packet)
-{
-	char buffer[PACKET_SIZE];
-	int len = serialize(buffer, packet, sizeof(TPacket));
-
-	serialWrite(buffer, len);
-}
-
-void *receiveThread(void *p)
-{
-	char buffer[PACKET_SIZE];
-	int len;
-	TPacket packet;
-	TResult result;
-	int counter=0;
-
-	while(1)
-	{
-		len = serialRead(buffer);
-		counter+=len;
-		if(len > 0)
-		{
-			result = deserialize(buffer, len, &packet);
-
-			if(result == PACKET_OK)
-			{
-				counter=0;
-				handlePacket(&packet);
-			}
-			else 
-				if(result != PACKET_INCOMPLETE)
-				{
-					printf("PACKET ERROR\n");
-					handleError(result);
-				}
-		}
-	}
-}
-
-void flushInput()
-{
-	char c;
-
-	while((c = getchar()) != '\n' && c != EOF);
-}
-
-void getParams(TPacket *commandPacket)
-{
-	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
-	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
-	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
-	flushInput();
-}
-
-void sendCommand(char command)
-{
-	TPacket commandPacket;
-
-	commandPacket.packetType = PACKET_TYPE_COMMAND;
-
-	switch(command)
-	{
-		case 'f':
-		case 'F':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_FORWARD;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'b':
-		case 'B':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_REVERSE;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'l':
-		case 'L':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_TURN_LEFT;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'r':
-		case 'R':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_TURN_RIGHT;
-			sendPacket(&commandPacket);
-			break;
-
-		case 's':
-		case 'S':
-			commandPacket.command = COMMAND_STOP;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'c':
-		case 'C':
-			commandPacket.command = COMMAND_CLEAR_STATS;
-			commandPacket.params[0] = 0;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'g':
-		case 'G':
-			commandPacket.command = COMMAND_GET_STATS;
-			sendPacket(&commandPacket);
-			break;
-
-		case 'q':
-		case 'Q':
-			exitFlag=1;
-			break;
-
-		default:
-			printf("Bad command\n");
-
-	}
-}
 
 int main()
 {
@@ -261,16 +101,28 @@ int main()
 
 	while(!exitFlag)
 	{
-		char ch;
-		printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, c=clear stats, g=get stats q=exit)\n");
-		scanf("%c", &ch);
-
-		// Purge extraneous characters from input stream
-		flushInput();
-
-		sendCommand(ch);
+		if (keyboardMode == 1) {
+			paramsControl();
+		} else if (keyboardMode == 2) {
+			keypressControl();
+		}
 	}
 
 	printf("Closing connection to Arduino.\n");
 	endSerial();
 }
+
+/*
+case SDLK_w : 
+	cout << "car moving forward" << endl;
+	break;
+case SDLK_a :
+        cout << "car turning left" << endl;
+        break;
+case SDLK_s :
+        cout << "car reversing" << endl;
+        break;
+case SDLK_d :
+        cout << "car turning right" << endl;
+        break;
+*/

@@ -121,6 +121,8 @@ void right(float ang , float speed){
 void stop()
 {
   dir = (TDirection) STOP;
+  deltaDist = 0;
+  deltaTicks = 0;
   move(0, STOP);
 }
 
