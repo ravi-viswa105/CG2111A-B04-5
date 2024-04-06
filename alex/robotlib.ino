@@ -97,8 +97,8 @@ void left(float ang , float speed){
     deltaTicks=99999999;
   }else{
     deltaTicks=computeDeltaTicks(ang);
-    targetTicks = leftReverseTurns + deltaTicks;
   }
+  targetTicks = leftReverseTurns + deltaTicks;
   ccw(ang,speed);
 }
 
@@ -113,8 +113,8 @@ void right(float ang , float speed){
     deltaTicks=99999999;
   }else{
     deltaTicks=computeDeltaTicks(ang);
-    targetTicks = rightReverseTurns + deltaTicks;
   }
+  targetTicks = rightReverseTurns + deltaTicks;
   cw(ang,speed);
 }
 
