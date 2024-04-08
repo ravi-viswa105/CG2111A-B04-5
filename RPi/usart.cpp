@@ -1,4 +1,6 @@
 #include "usart.h"
+#include "colour.h"
+extern int speed;
 
 void handleError(TResult error)
 {
@@ -45,6 +47,15 @@ void handleResponse(TPacket *packet)
 		case RESP_STATUS:
 			handleStatus(packet);
 		break;
+
+		case RESP_COLOR:
+			handleColor(packet);
+		break;
+
+		case RESP_DIST:
+			handleDistance(packet);
+			break;
+
 
 		default:
 			printf("Arduino is confused\n");
@@ -147,7 +158,10 @@ void *receiveThread(void *p)
 
 void getParams(TPacket *commandPacket)
 {
-    if (keyboardMode == 2) { return; }
+    if (keyboardMode == 2) { 
+	    commandPacket->params[0] = speed;
+	    return; 
+    }
 	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
 	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
 	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
@@ -220,6 +234,19 @@ void sendCommand(char command)
 		case 'g':
 		case 'G':
 			commandPacket.command = COMMAND_GET_STATS;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'v':
+		case 'V':
+			printf("GET COLOR\n");
+			commandPacket.command = COMMAND_COLOR;
+			sendPacket(&commandPacket);
+			break;
+		case 'u':
+		case 'U':
+			printf("GET DISTANCE\n");
+			commandPacket.command = COMMAND_DIST;
 			sendPacket(&commandPacket);
 			break;
 

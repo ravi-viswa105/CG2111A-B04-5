@@ -159,6 +159,9 @@ void handleCommandParam(TPacket *command)
       sendColor();
       sendOK();
       break;
+    case COMMAND_DIST:
+      sendDistance(); // OK packet in sendDistance
+      break;
         
     default:
       sendBadCommand();
@@ -172,19 +175,19 @@ void handleCommandKeyboard(TPacket *command)
     // For movement commands, param[0] = distance, param[1] = speed.
     case COMMAND_FORWARD:
         sendOK();
-        forward(-1, 100);
+        forward(-1, command->params[0]);
       break;
     case COMMAND_REVERSE:
         sendOK();
-        backward(-1, 100);
+        backward(-1, command->params[0]);
       break;
     case COMMAND_TURN_LEFT:
         sendOK();
-        left(-1, 100);
+        left(-1, command->params[0]);
       break;
     case COMMAND_TURN_RIGHT:
         sendOK();
-        right(-1, 100);
+        right(-1, command->params[0]);
       break;
     case COMMAND_STOP:
         sendOK();
@@ -203,7 +206,9 @@ void handleCommandKeyboard(TPacket *command)
       sendColor();
       sendOK();
       break;
-        
+    case COMMAND_DIST:
+      sendDistance(); // OK packet in sendDistance
+      break;      
     default:
       sendBadCommand();
   }
