@@ -36,7 +36,7 @@ void handleResponse(TPacket *packet)
 			printf("Command OK\n");
 		break;
 
-		case RESP_STATS:
+		case RESP_STATUS:
 			handleStatus(packet);
 		break;
 
