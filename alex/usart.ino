@@ -208,8 +208,7 @@ void handleCommandKeyboard(TPacket *command)
       break;
     case COMMAND_DIST:
       sendDistance(); // OK packet in sendDistance
-      break;
-        
+      break;      
     default:
       sendBadCommand();
   }
