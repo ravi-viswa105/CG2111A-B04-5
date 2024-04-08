@@ -38,3 +38,16 @@ void handleColor(TPacket *packet) {
 	} else printf("\nNo color detected!\n");
 	printf("\n--------------------------------------\n\n");
 }
+
+void handleDistance(TPacket *packet) {
+	uint32_t distance = packet->params[0];
+	printf("Ultrasonic Distance:\t\t%d cm\n", distance);
+	
+	const int DIST_THRESHOLD = 25;
+	if (distance < DIST_THRESHOLD) printf("WALL NEARBY! SLOW DOWN!\n");
+}
+
+
+
+
+
