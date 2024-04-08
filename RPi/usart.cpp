@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-=======
-#include "usart.h"
-#include "colour.h"
 extern int speed;
+extern int keyboardMode;
+extern int exitFlag;
 
->>>>>>> ea564667bba7d137a42b408211ce1723dd4b99f8
 void handleError(TResult error)
 {
 	switch(error)
@@ -30,16 +27,6 @@ void handleStatus(TPacket *packet)
 	printf("\n---------------------------------------\n\n");
 }
 
-void handleColour(TPacket *packet)
-{
-	printf("\n ------- ALEX COLOUR REPORT ------- \n\n");
-	printf("Red:\t\t%d\n", packet->params[0]);
-	printf("Green:\t\t%d\n", packet->params[1]);
-	printf("Blue:\t\t%d\n", packet->params[2]);
-	printf("Distance:\t\t%d\n", packet->params[3]))
-	printf("\n---------------------------------------\n\n");	
-}
-
 void handleResponse(TPacket *packet)
 {
 	// The response code is stored in command
@@ -49,14 +36,10 @@ void handleResponse(TPacket *packet)
 			printf("Command OK\n");
 		break;
 
-		case COMMAND_GET_STATS:
+		case RESP_STATS:
 			handleStatus(packet);
 		break;
 
-<<<<<<< HEAD
-		case COMMAND_COLOUR:
-			handleColour(packet);
-=======
 		case RESP_COLOR:
 			handleColor(packet);
 		break;
@@ -65,7 +48,6 @@ void handleResponse(TPacket *packet)
 			handleDistance(packet);
 			break;
 
->>>>>>> ea564667bba7d137a42b408211ce1723dd4b99f8
 
 		default:
 			printf("Arduino is confused\n");
@@ -247,22 +229,17 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
-<<<<<<< HEAD
-		case 'h':
-		case 'H':
-			commandPacket.command = COMMAND_COLOUR;
-=======
 		case 'v':
 		case 'V':
 			printf("GET COLOR\n");
 			commandPacket.command = COMMAND_COLOR;
 			sendPacket(&commandPacket);
 			break;
+			
 		case 'u':
 		case 'U':
 			printf("GET DISTANCE\n");
 			commandPacket.command = COMMAND_DIST;
->>>>>>> ea564667bba7d137a42b408211ce1723dd4b99f8
 			sendPacket(&commandPacket);
 			break;
 

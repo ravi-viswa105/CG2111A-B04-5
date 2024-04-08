@@ -1,5 +1,3 @@
-#include "colour.h"
-
 float getPercentDiff(uint32_t a, uint32_t b) {
 	uint32_t diff = (a > b) ? a-b : b-a; // abs diff
 	uint32_t large = (a > b) ? a : b; // max

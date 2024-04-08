@@ -29,7 +29,8 @@ typedef enum
   RESP_BAD_COMMAND = 4,
   RESP_BAD_RESPONSE = 5, 
   RESP_COLOR = 6,
-  RESP_DIST = 7
+  RESP_DIST = 7,
+  RESP_STATS = 8
 } TResponseType;
 
 

@@ -22,10 +22,10 @@ using namespace std;
 #define LEFT_ARROW_KEY 			1073741904
 #define RIGHT_ARROW_KEY 		1073741903
 
-int exitFlag=0;
-int speed = DEFAULT_SPEED;
+static int exitFlag=0;
+static int speed = DEFAULT_SPEED;
 // 1 for controlling with params, 2 for controlling with keypress
-int keyboardMode=1;
+static int keyboardMode=1;
 sem_t _xmitSema;
 
 

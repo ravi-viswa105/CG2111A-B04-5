@@ -25,7 +25,7 @@ void sendStatus()
 {
   TPacket statusPacket;
   statusPacket.packetType = PACKET_TYPE_RESPONSE;
-  statusPacket.command = RESP_STATUS;
+  statusPacket.command = RESP_STATS;
   statusPacket.params[0] = forwardDist;
   statusPacket.params[1] = reverseDist;
   sendResponse(&statusPacket);
