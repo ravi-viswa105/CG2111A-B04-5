@@ -2,6 +2,7 @@
 #include <math.h>
 #include "packet.h"
 #include "constants.h"
+
 #include <serialize.h>
 
 volatile TDirection dir;
@@ -190,6 +191,7 @@ void setup() {
   startSerial();
   enablePullups();
   initializeState();
+  setupUltrasonic();
   sei();
 }
 
@@ -209,7 +211,7 @@ void loop() {
         stop();
         delay(1000);
       }
-    } else {
+    } else if(dir == STOP){
       deltaDist = 0;
       newDist = 0;
       stop();
@@ -238,7 +240,7 @@ void loop() {
         stop();
         delay(1000);
       }
-    } else {
+    } else if(dir == STOP){
       deltaTicks = 0;
       targetTicks = 0;
       stop();
