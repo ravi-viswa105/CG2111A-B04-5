@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define PACKET_SIZE		140
-#define MAX_DATA_SIZE				128
+#define MAX_DATA_SIZE	128
 
 typedef enum
 {

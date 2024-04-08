@@ -5,6 +5,7 @@
 #include "serialize.h"
 
 #define MAGIC_NUMBER				0xFCFDFEFF
+#define BUFFER_SIZE 				(PACKET_SIZE * 10)
 
 /* Data size is 4 + 128 + 4 + 1 = 137 bytes. We pad to 140 bytes as this is the nearest divisible by 4 we have. So 
 	 we add 3 bytes */
@@ -26,9 +27,11 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 	static int counter=0;
 
 	// If there's leftover bytes from the next transmission
+	static int front=0;
+	static int back=0;
 	static int leftoverFlag=0;
 	static int leftoverCount=0;
-	static char leftoverBuffer[PACKET_SIZE];
+	static char leftoverBuffer[BUFFER_SIZE];
 
 	int bytesLeft;
 	int i;	
@@ -42,15 +45,18 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 			leftoverFlag=0;
 			copyCount = leftoverCount;
 		}
-		else
+		else 
+		{
 			copyCount = PACKET_SIZE;
+		}
 
 		leftoverCount -= copyCount;
 
 		for(i=0; i<copyCount; i++)
 		{
-			outputBuffer[counter++] = leftoverBuffer[i];
-		}
+			outputBuffer[counter++] = leftoverBuffer[front++];
+			front = front % BUFFER_SIZE;
+		}		
 	}
 
 	if(counter + len >= PACKET_SIZE)
