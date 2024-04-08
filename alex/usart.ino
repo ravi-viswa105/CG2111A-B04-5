@@ -26,18 +26,8 @@ void sendStatus()
   TPacket statusPacket;
   statusPacket.packetType = PACKET_TYPE_RESPONSE;
   statusPacket.command = RESP_STATUS;
-  statusPacket.params[0] = leftForwardTicks;
-  statusPacket.params[1] = rightForwardTicks;
-  statusPacket.params[2] = leftReverseTicks;
-  statusPacket.params[3] = rightReverseTicks;
-  statusPacket.params[4] = leftForwardTurns;
-  statusPacket.params[5] = rightForwardTurns;
-  statusPacket.params[6] = leftReverseTurns;
-  statusPacket.params[7] = rightReverseTurns;
-  statusPacket.params[8] = forwardDist;
-  statusPacket.params[9] = reverseDist;
-  statusPacket.params[10] = deltaTicks;
-  statusPacket.params[11] = targetTicks;
+  statusPacket.params[0] = forwardDist;
+  statusPacket.params[1] = reverseDist;
   sendResponse(&statusPacket);
 }
 
@@ -45,8 +35,8 @@ void sendMessage(const char *message)
 {
   // Sends text messages back to the Pi. Useful
   // for debugging.
- 
-  TPacket messagePacket;
+
+  TMessage messagePacket;
   messagePacket.packetType=PACKET_TYPE_MESSAGE;
   strncpy(messagePacket.data, message, MAX_STR_LEN);
   sendResponse(&messagePacket);

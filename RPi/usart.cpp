@@ -1,5 +1,3 @@
-#include "usart.h"
-
 void handleError(TResult error)
 {
 	switch(error)
@@ -19,18 +17,20 @@ void handleError(TResult error)
 
 void handleStatus(TPacket *packet)
 {
-	printf("\n ------- ALEX STATUS REPORT ------- \n\n");
-	printf("Left Forward Ticks:\t\t%d\n", packet->params[0]);
-	printf("Right Forward Ticks:\t\t%d\n", packet->params[1]);
-	printf("Left Reverse Ticks:\t\t%d\n", packet->params[2]);
-	printf("Right Reverse Ticks:\t\t%d\n", packet->params[3]);
-	printf("Left Forward Ticks Turns:\t%d\n", packet->params[4]);
-	printf("Right Forward Ticks Turns:\t%d\n", packet->params[5]);
-	printf("Left Reverse Ticks Turns:\t%d\n", packet->params[6]);
-	printf("Right Reverse Ticks Turns:\t%d\n", packet->params[7]);
-	printf("Forward Distance:\t\t%d\n", packet->params[8]);
-	printf("Reverse Distance:\t\t%d\n", packet->params[9]);
+	printf("\n ------- ALEX DISTANCE REPORT ------- \n\n");
+	printf("Forward Distance:\t\t%d\n", packet->params[0]);
+	printf("Reverse Distance:\t\t%d\n", packet->params[1]);
 	printf("\n---------------------------------------\n\n");
+}
+
+void handleColour(TPacket *packet)
+{
+	printf("\n ------- ALEX COLOUR REPORT ------- \n\n");
+	printf("Red:\t\t%d\n", packet->params[0]);
+	printf("Green:\t\t%d\n", packet->params[1]);
+	printf("Blue:\t\t%d\n", packet->params[2]);
+	printf("Distance:\t\t%d\n", packet->params[3]))
+	printf("\n---------------------------------------\n\n");	
 }
 
 void handleResponse(TPacket *packet)
@@ -42,9 +42,12 @@ void handleResponse(TPacket *packet)
 			printf("Command OK\n");
 		break;
 
-		case RESP_STATUS:
+		case COMMAND_GET_STATS:
 			handleStatus(packet);
 		break;
+
+		case COMMAND_COLOUR:
+			handleColour(packet);
 
 		default:
 			printf("Arduino is confused\n");
@@ -77,7 +80,7 @@ void handleErrorResponse(TPacket *packet)
 	}
 }
 
-void handleMessage(TPacket *packet)
+void handleMessage(TMessage *packet)
 {
 	printf("Message from Alex: %s\n", packet->data);
 }
@@ -174,7 +177,7 @@ void sendCommand(char command)
             keyboardMode = 2;
             break;
 
-               // Movement
+        // Movement
 		case 'w':
 		case 'W':
 			getParams(&commandPacket);
@@ -209,7 +212,7 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
-               // Stats
+        // Stats
 		case 'c':
 		case 'C':
 			commandPacket.command = COMMAND_CLEAR_STATS;
@@ -223,6 +226,12 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
+		case 'h':
+		case 'H':
+			commandPacket.command = COMMAND_COLOUR;
+			sendPacket(&commandPacket);
+			break;
+
         // Others
 		case 'q':
 		case 'Q':
@@ -231,6 +240,5 @@ void sendCommand(char command)
 
 		default:
 			printf("Bad command\n");
-
 	}
 }
