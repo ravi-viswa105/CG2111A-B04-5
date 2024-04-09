@@ -10,6 +10,7 @@ void setup() {
   cgservo.write(90); // stop the motor, any value greater than 90 causes the servo to rotate clockwise, and determines the speed
 }
 
+// void rotateservo() {
 // Loop to keep the motor turning
 void loop() {
   cgservo.write(135); // rotate the motor forward
