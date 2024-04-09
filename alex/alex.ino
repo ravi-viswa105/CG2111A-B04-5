@@ -192,6 +192,7 @@ void setup() {
   enablePullups();
   initializeState();
   setupUltrasonic();
+  setupServo();
   sei();
 }
 
