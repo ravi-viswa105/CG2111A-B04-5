@@ -1,3 +1,7 @@
+#include <stdint.h>
+#include <stdio.h>
+#include "packet.h"
+
 float getPercentDiff(uint32_t a, uint32_t b) {
 	uint32_t diff = (a > b) ? a-b : b-a; // abs diff
 	uint32_t large = (a > b) ? a : b; // max
@@ -22,8 +26,8 @@ void handleColor(TPacket *packet) {
 	float redGreenDiff = getPercentDiff(red, green);
 	float blueGreenDiff = getPercentDiff(blue, green);
 
-	printf( "Red Green diff:\t\t%0.2lf%\n", redGreenDiff);
-	printf( "Blue Green diff:\t%0.2lf%\n", blueGreenDiff);
+	printf( "Red Green diff:\t\t%0.2lf\n", redGreenDiff);
+	printf( "Blue Green diff:\t%0.2lf\n", blueGreenDiff);
 
 	if (redGreenDiff >= COLOR_THRESHOLD) {
 		if (red < green) {

@@ -48,5 +48,6 @@ typedef enum
   COMMAND_COLOR = 7,
   COMMAND_DIST = 8
 } TCommandType;
+
 #endif
 

@@ -1,3 +1,10 @@
+#include "serialize.h"
+#include "serial.h"
+#include "packet.h"
+#include "constants.h"
+#include "colour.h"
+#include <stdio.h>
+
 extern int speed;
 extern int keyboardMode;
 extern int exitFlag;
@@ -103,9 +110,9 @@ void handlePacket(TPacket *packet)
 				handleErrorResponse(packet);
 			break;
 
-		case PACKET_TYPE_MESSAGE:
-				handleMessage(packet);
-			break;
+		// case PACKET_TYPE_MESSAGE:
+		// 		handleMessage(packet);
+		// 	break;
 	}
 }
 
