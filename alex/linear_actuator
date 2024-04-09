@@ -5,7 +5,7 @@
 Servo cgservo;
 
 // Setup section to run once
-void setup() {
+void setupServo() {
   cgservo.attach(45); // attach the servo to our servo object (DIGITAL PIN 45)
   cgservo.write(90); // stop the motor, any value greater than 90 causes the servo to rotate clockwise, and determines the speed
 }
