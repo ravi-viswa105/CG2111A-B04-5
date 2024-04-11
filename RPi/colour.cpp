@@ -38,7 +38,7 @@ void handleColor(TPacket *packet) {
 	} else printf("\nNo color detected!\n");
 	printf("\n--------------------------------------\n\n"); */
 
-	if ((red <= green) && (green > 15)) 
+	if ((red+5 <= green) && (green > 15)) 
 	{
 		printf("\nRED!\n");
 	}

@@ -55,7 +55,7 @@ void keypressControl() {
             }
             else if (event.type == SDL_KEYUP){
 		    auto key = event.key.keysym.sym;
-		    if(key != LEFT_ARROW_KEY && key != RIGHT_ARROW_KEY && key != SDLK_u && key != SDLK_k){
+		    if(key != LEFT_ARROW_KEY && key != RIGHT_ARROW_KEY && key != SDLK_u && key != SDLK_k && key != SDLK_v){
                     cout << "car stopped" << endl;
 		    sendCommand('o');
 		    }
