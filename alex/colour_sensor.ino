@@ -64,13 +64,6 @@ void findColor() {
   // Reading the output frequency for BLUE
   blue_freq = average_freq();
   delay(color_sensor_delay);
-  Serial.print("red : ");
-  Serial.println(red_freq);
-  Serial.print("green : ");
-  Serial.println(green_freq);
-  Serial.print("blue : ");
-  Serial.println(blue_freq);
-
 }
 
 void sendColor() {

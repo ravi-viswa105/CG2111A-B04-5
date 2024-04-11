@@ -191,6 +191,7 @@ void setup() {
   startSerial();
   enablePullups();
   initializeState();
+  setupUltrasonic();
   sei();
 }
 

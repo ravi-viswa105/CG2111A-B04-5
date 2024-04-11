@@ -3,22 +3,27 @@
 #include <semaphore.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <ncurses.h>
+#include <termios.h>
+#include <iostream>
+#include <SDL2/SDL.h>
 #include "packet.h"
 #include "serial.h"
 #include "serialize.h"
 #include "constants.h"
 #include "usart.h"
-#include <ncurses.h>
-#include <termios.h>
-#include <iostream>
-#include <SDL2/SDL.h>
+#include "colour.h"
 using namespace std;
 
 
 #define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
+#define DEFAULT_SPEED			100
+#define LEFT_ARROW_KEY 			1073741904
+#define RIGHT_ARROW_KEY 		1073741903
 
 int exitFlag=0;
+int speed = DEFAULT_SPEED;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode=1;
 sem_t _xmitSema;
@@ -26,7 +31,7 @@ sem_t _xmitSema;
 
 void paramsControl() {
 	char ch;
-	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats q=exit)\n");
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
 	printf("Mode: 1=param control, 2=keyboard control\n");
 	scanf("%c", &ch);
         printf("send command : %c\n" , ch);
@@ -48,10 +53,13 @@ void keypressControl() {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
-            else if (event.type == SDL_KEYUP) {
-                cout << "car stopped" << endl;
-		    keyAlreadyPressed = false;
+            else if (event.type == SDL_KEYUP){
+		    auto key = event.key.keysym.sym;
+		    if(key != LEFT_ARROW_KEY && key != RIGHT_ARROW_KEY && key != SDLK_u && key != SDLK_k && key != SDLK_v){
+                    cout << "car stopped" << endl;
 		    sendCommand('o');
+		    }
+		    keyAlreadyPressed = false;
             }
             else if (event.type == SDL_KEYDOWN && !keyAlreadyPressed) {
                 keyAlreadyPressed = true;
@@ -60,6 +68,20 @@ void keypressControl() {
                         	quit = true;
                         	stop = true;
 				keyboardMode = 1;
+				break;
+			case LEFT_ARROW_KEY ://self defined
+				speed -=5;
+				printf("speed is decreased to %d\n" , speed);
+				break;
+
+			case RIGHT_ARROW_KEY : 
+				if(speed+5 <= 100){
+					speed += 5;
+					printf("speed is increased to %d\n" , speed);
+				}else{
+					speed = 100;
+					printf("speed is maxed at 100\n");
+				}
 				break;
 			default :
 				const char* string=  SDL_GetKeyName(event.key.keysym.sym);	
