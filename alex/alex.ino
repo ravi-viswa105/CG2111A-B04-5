@@ -4,8 +4,12 @@
 #include "constants.h"
 
 #include <serialize.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
+volatile int count;
 volatile TDirection dir;
+bool preventCollision = false;
 
 #define PI 3.141592654
 #define ALEX_LENGTH 12     //to change
@@ -192,10 +196,22 @@ void setup() {
   enablePullups();
   initializeState();
   setupUltrasonic();
+  InitTimer0();
+  StartTimer0();
+  DDRD |= 0b00000011;
+  count = 0;
   sei();
 }
 
 void loop() {
+
+  if(preventCollision){
+    uint32_t temp = getUltrasonicDistance();
+      if(temp < 10 && temp > 0) {
+      stop();
+      sendMessage("auto stopped");
+    }
+  }
   if (deltaDist > 0) {
     if (dir == FORWARD) {
       if (forwardDist > newDist) {
