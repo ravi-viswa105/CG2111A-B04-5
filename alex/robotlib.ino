@@ -64,6 +64,7 @@ void forward(float dist, float speed)
   newDist=forwardDist + deltaDist;
   dir = (TDirection) FORWARD;
   move(speed, FORWARD);
+  preventCollision = true;
 }
 
 void backward(float dist, float speed)
