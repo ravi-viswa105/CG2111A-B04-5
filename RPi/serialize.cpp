@@ -5,7 +5,7 @@
 #include "serialize.h"
 
 #define MAGIC_NUMBER				0xFCFDFEFF
-#define BUFFER_SIZE 				(PACKET_SIZE * !0)
+#define BUFFER_SIZE 				(PACKET_SIZE * 10)
 
 /* Data size is 4 + 128 + 4 + 1 = 137 bytes. We pad to 140 bytes as this is the nearest divisible by 4 we have. So 
 	 we add 3 bytes */
@@ -34,6 +34,8 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 	static int leftoverCount=0;
 	static char leftoverBuffer[BUFFER_SIZE];
 
+	//printf("front:%d\n", front);
+	//printf("back:%d\n", back);
 	int bytesLeft;
 	int i;	
 

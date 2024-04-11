@@ -16,7 +16,7 @@
 using namespace std;
 
 
-#define PORT_NAME			"/dev/ttyACM0"
+#define PORT_NAME			"/dev/ttyACM2"
 #define BAUD_RATE			B9600
 #define DEFAULT_SPEED			100
 #define LEFT_ARROW_KEY 			1073741904
