@@ -41,23 +41,23 @@ void sendStatus()
   sendResponse(&statusPacket);
 }
 
-void sendMessage(const char *message)
-{
-  // Sends text messages back to the Pi. Useful
-  // for debugging.
+// void sendMessage(const char *message)
+// {
+//   // Sends text messages back to the Pi. Useful
+//   // for debugging.
  
-  TPacket messagePacket;
-  messagePacket.packetType=PACKET_TYPE_MESSAGE;
-  strncpy(messagePacket.data, message, MAX_STR_LEN);
-  sendResponse(&messagePacket);
-}
+//   TPacket messagePacket;
+//   messagePacket.packetType=PACKET_TYPE_MESSAGE;
+//   strncpy(messagePacket.data, message, MAX_STR_LEN);
+//   sendResponse(&messagePacket);
+// }
 
 void dbprintf(char *format, ...) {
   va_list args;
   char buffer[128];
   va_start(args, format);
   vsprintf(buffer, format, args);
-  sendMessage(buffer);
+  // sendMessage(buffer);
 } 
 
 void sendBadPacket()

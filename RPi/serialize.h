@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#define PACKET_SIZE		140
-#define MAX_DATA_SIZE				128
+#define PACKET_SIZE				(MAX_DATA_SIZE + 12) //140
+#define MAX_DATA_SIZE			20 					 //128
 
 typedef enum
 {

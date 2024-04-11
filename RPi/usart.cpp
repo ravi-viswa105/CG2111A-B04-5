@@ -88,10 +88,10 @@ void handleErrorResponse(TPacket *packet)
 	}
 }
 
-void handleMessage(TPacket *packet)
-{
-	printf("Message from Alex: %s\n", packet->data);
-}
+// void handleMessage(TPacket *packet)
+// {
+// 	printf("Message from Alex: %s\n", packet->data);
+// }
 
 void handlePacket(TPacket *packet)
 {
@@ -112,7 +112,7 @@ void handlePacket(TPacket *packet)
 			break;
 
 		case PACKET_TYPE_MESSAGE:
-				handleMessage(packet);
+				// handleMessage(packet);
 			break;
 	}
 }

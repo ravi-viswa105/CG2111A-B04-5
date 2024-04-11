@@ -5,10 +5,12 @@
 #include "serialize.h"
 
 #define MAGIC_NUMBER				0xFCFDFEFF
+#define BUFFER_SIZE 				(PACKET_SIZE * !0)
 
 /* Data size is 4 + 128 + 4 + 1 = 137 bytes. We pad to 140 bytes as this is the nearest divisible by 4 we have. So 
 	 we add 3 bytes */
 
+/* 4 + 4 + 20 + 1 + 3 = 32*/
 typedef struct comms
 {
 	uint32_t magic;
@@ -26,9 +28,11 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 	static int counter=0;
 
 	// If there's leftover bytes from the next transmission
+	static int front=0;
+	static int back=0;
 	static int leftoverFlag=0;
 	static int leftoverCount=0;
-	static char leftoverBuffer[PACKET_SIZE];
+	static char leftoverBuffer[BUFFER_SIZE];
 
 	int bytesLeft;
 	int i;	
@@ -49,7 +53,8 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 
 		for(i=0; i<copyCount; i++)
 		{
-			outputBuffer[counter++] = leftoverBuffer[i];
+			outputBuffer[counter++] = leftoverBuffer[front++];
+			front = front % BUFFER_SIZE;
 		}
 	}
 
@@ -59,10 +64,18 @@ static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 		leftoverFlag=1;
 		int bytesToCopy = len - bytesLeft;
 
+		if ((bytesToCopy + back) % BUFFER_SIZE >= front) {
+			printf("Packet dropped\n");
+			back -= PACKET_SIZE; // Drop the latest  packet
+			if (back < 0) {
+				back = BUFFER_SIZE + back;
+			}
+		}
 		// Copy to leftover buffer
 		for(i=0; i<bytesToCopy; i++)
 		{
-			leftoverBuffer[leftoverCount+i] = inputBuffer[bytesLeft + i];
+			leftoverBuffer[back++] = inputBuffer[bytesLeft + i];
+			back = back % BUFFER_SIZE;
 		}
 		leftoverCount += bytesToCopy;
 	}
