@@ -16,7 +16,7 @@
 using namespace std;
 
 
-#define PORT_NAME			"/dev/ttyACM0"
+#define PORT_NAME			"/dev/ttyACM4"
 #define BAUD_RATE			B9600
 #define DEFAULT_SPEED			100
 #define LEFT_ARROW_KEY 			1073741904
@@ -26,6 +26,7 @@ int exitFlag=0;
 int speed = DEFAULT_SPEED;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode=1;
+char previous_command = '0';
 sem_t _xmitSema;
 
 
@@ -36,6 +37,30 @@ void paramsControl() {
 	scanf("%c", &ch);
         printf("send command : %c\n" , ch);
 	sendCommand(ch);
+}
+
+void PressAndPress(){
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
+	refresh();
+	int c;
+	while((c=getch()) == ERR || char(c) == previous_command){}
+	char ch = c;
+        printw("Character input: %c\n", ch);
+        refresh();
+	sendCommand(ch);
+	previous_command = ch;
+}
+
+void TimedMovement(){
+	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
+	refresh();
+	int c;
+	while((c=getch()) == ERR){}
+	char ch = c;
+        printw("Character input: %c\n", ch);
+        refresh();
+	sendCommand(ch);
+	usleep(1000000);
 }
 
 void keypressControl() {
@@ -127,6 +152,10 @@ int main()
 			paramsControl();
 		} else if (keyboardMode == 2) {
 			keypressControl();
+		}else if(keyboardMode == 3){
+			TimedMovement();
+		}else if(keyboardMode == 4){
+			PressAndPress();
 		}
 	}
 
@@ -134,17 +163,3 @@ int main()
 	endSerial();
 }
 
-/*
-case SDLK_w : 
-	cout << "car moving forward" << endl;
-	break;
-case SDLK_a :
-        cout << "car turning left" << endl;
-        break;
-case SDLK_s :
-        cout << "car reversing" << endl;
-        break;
-case SDLK_d :
-        cout << "car turning right" << endl;
-        break;
-*/

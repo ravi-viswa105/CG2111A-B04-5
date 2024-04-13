@@ -41,7 +41,11 @@ void handleResponse(TPacket *packet)
 	switch(packet->command)
 	{
 		case RESP_OK:
+			
 			printf("Command OK\n");
+			if(keyboardMode == 3 || keyboardMode == 4){
+				refresh();
+			}
 		break;
 
 		case RESP_STATUS:
@@ -103,6 +107,10 @@ void handlePacket(TPacket *packet)
 		case PACKET_TYPE_COMMAND_KEYBOARD:
 				// Only we send command packets, so ignore
 			break;
+
+		case PACKET_TYPE_COMMAND_TIME :
+			break;
+				// Only we send command packets, so ignore
 		case PACKET_TYPE_RESPONSE:
 				handleResponse(packet);
 			break;
@@ -158,13 +166,23 @@ void *receiveThread(void *p)
 
 void getParams(TPacket *commandPacket)
 {
-    if (keyboardMode == 2) { 
-	    commandPacket->params[0] = speed;
-	    return; 
-    }
-	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
-	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
-	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
+   switch(keyboardMode){
+
+	case 1:
+
+		printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
+		printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
+		scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
+		break;
+	case 2 : 
+	case 3 :	
+	    	commandPacket->params[0] = speed;
+		break;
+	case 4:
+		break;
+	default:
+		break;
+   }
 }
 
 void sendCommand(char command)
@@ -172,20 +190,47 @@ void sendCommand(char command)
 	TPacket commandPacket;
 
 	if (keyboardMode == 1) {
-        commandPacket.packetType = PACKET_TYPE_COMMAND_PARAM;
-    } else {
-        commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD;
-    }
+        	commandPacket.packetType = PACKET_TYPE_COMMAND_PARAM;
+    	}else if(keyboardMode == 2 || keyboardMode == 3){
+        	commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD;
+    	}else{
+		commandPacket.packetType = PACKET_TYPE_COMMAND_TIME;
+    	}
 
 	switch(command)
 	{
         // Changing the movement mode
         case '1':
+	    endwin();
             keyboardMode = 1;
+	    printf("Switched to params mode");
             break;
 
         case '2':
+	    endwin();
             keyboardMode = 2;
+	    printf("Switched to Key Hold mode");
+            break;
+
+        case '3':
+	    initscr();
+    	    cbreak(); // Disable line buffering
+            noecho(); // Don't echo input characters
+    	    nodelay(stdscr, TRUE); // Set non-blocking mod
+            keyboardMode = 3;
+	    printf("Switched to Key Press mode");
+	    refresh();
+            break;
+	
+        case '4':
+
+	    initscr();
+      	    cbreak(); // Disable line buffering
+    	    noecho(); // Don't echo input characters
+    	    nodelay(stdscr, TRUE); // Set non-blocking mod
+            keyboardMode = 4;
+	    printf("Switched to Small Adjustment mode");
+	    refresh();
             break;
 
                // Movement
