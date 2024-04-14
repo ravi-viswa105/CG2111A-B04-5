@@ -1,6 +1,4 @@
 #include "usart.h"
-#include "colour.h"
-extern int speed;
 
 void handleError(TResult error)
 {
@@ -42,10 +40,12 @@ void handleResponse(TPacket *packet)
 	{
 		case RESP_OK:
 			
-			printf("Command OK\n");
 			if(keyboardMode == 3 || keyboardMode == 4){
-				refresh();
+				printw("Command OK\n");
+			}else{
+				printf("Command OK\n");
 			}
+			clear_to_send_command = true;
 		break;
 
 		case RESP_STATUS:
@@ -126,7 +126,10 @@ void handlePacket(TPacket *packet)
 }
 
 void sendPacket(TPacket *packet)
-{
+{	
+	if(packet->packetType == PACKET_TYPE_COMMAND_KEYBOARD || packet->packetType == PACKET_TYPE_COMMAND_TIME || packet->packetType == PACKET_TYPE_COMMAND_PARAM){
+		clear_to_send_command = false;
+	}
 	char buffer[PACKET_SIZE];
 	int len = serialize(buffer, packet, sizeof(TPacket));
 
@@ -201,15 +204,19 @@ void sendCommand(char command)
 	{
         // Changing the movement mode
         case '1':
-	    endwin();
+	    if(keyboardMode == 3 || keyboardMode == 4){
+	    	endwin();
+	    }
             keyboardMode = 1;
-	    printf("Switched to params mode");
+	    printf("Switched to params mode\n");
             break;
 
         case '2':
-	    endwin();
+	    if(keyboardMode == 3 || keyboardMode == 4){
+	    	endwin();
+	    }
             keyboardMode = 2;
-	    printf("Switched to Key Hold mode");
+	    printf("Switched to Key Hold mode\n");
             break;
 
         case '3':
@@ -218,7 +225,7 @@ void sendCommand(char command)
             noecho(); // Don't echo input characters
     	    nodelay(stdscr, TRUE); // Set non-blocking mod
             keyboardMode = 3;
-	    printf("Switched to Key Press mode");
+	    printf("Switched to Key Press mode\n");
 	    refresh();
             break;
 	
@@ -229,7 +236,7 @@ void sendCommand(char command)
     	    noecho(); // Don't echo input characters
     	    nodelay(stdscr, TRUE); // Set non-blocking mod
             keyboardMode = 4;
-	    printf("Switched to Small Adjustment mode");
+	    printf("Switched to Small Adjustment mode\n");
 	    refresh();
             break;
 
