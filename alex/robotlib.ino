@@ -125,5 +125,6 @@ void stop()
   deltaDist = 0;
   deltaTicks = 0;
   move(0, STOP);
+  preventCollision = false;
 }
 
