@@ -24,8 +24,8 @@ void handleColor(TPacket *packet) {
 	float redGreenDiff = getPercentDiff(red, green);
 	float blueGreenDiff = getPercentDiff(blue, green);
 
-	printf( "Red Green diff:\t\t%0.2lf%\n", redGreenDiff);
-	printf( "Blue Green diff:\t%0.2lf%\n", blueGreenDiff);
+	printf( "Red Green diff:\t\t%0.2lf%%\n", redGreenDiff);
+	printf( "Blue Green diff:\t%0.2lf%%\n", blueGreenDiff);
 
 	if (redGreenDiff >= COLOR_THRESHOLD) {
 		if (red < green) {

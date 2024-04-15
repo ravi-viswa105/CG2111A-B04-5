@@ -64,6 +64,7 @@ void forward(float dist, float speed)
   newDist=forwardDist + deltaDist;
   dir = (TDirection) FORWARD;
   move(speed, FORWARD);
+  preventCollision = true;
 }
 
 void backward(float dist, float speed)
@@ -93,12 +94,12 @@ void ccw(float dist, float speed)//left
 }
 
 void left(float ang , float speed){
-  if(ang == 0){
+  if(ang < 0){
     deltaTicks=99999999;
   }else{
     deltaTicks=computeDeltaTicks(ang);
-    targetTicks = leftReverseTurns + deltaTicks;
   }
+  targetTicks = leftReverseTurns + deltaTicks;
   ccw(ang,speed);
 }
 
@@ -109,12 +110,12 @@ void cw(float dist, float speed)//right
 }
 
 void right(float ang , float speed){
-  if(ang == 0){
+  if(ang < 0){
     deltaTicks=99999999;
   }else{
     deltaTicks=computeDeltaTicks(ang);
-    targetTicks = rightReverseTurns + deltaTicks;
   }
+  targetTicks = rightReverseTurns + deltaTicks;
   cw(ang,speed);
 }
 
@@ -124,5 +125,6 @@ void stop()
   deltaDist = 0;
   deltaTicks = 0;
   move(0, STOP);
+  preventCollision = false;
 }
 

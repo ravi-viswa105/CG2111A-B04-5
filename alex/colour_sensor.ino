@@ -1,14 +1,18 @@
-#define S1 44
-#define S0 48
-#define S2 52
-#define S3 46
-#define sensorOut 50
+#define S1 44 //brown
+#define S0 48 //orange
+#define S2 52 //blue
+#define S3 46 //green
+#define sensorOut 50 //white
 
 #define color_sensor_delay 50 //milliseconds
+#define ShroudMouthToUltrasonic 10 //cm//to change
+#define DistancetoStop 2 //cm//dist to stop from object
 
 unsigned long red_freq;
 unsigned long green_freq;
 unsigned long blue_freq;
+
+unsigned long linearactuatordist = 0;
 
 void setup_colour_sensor() {
   pinMode(S0, OUTPUT);
@@ -37,7 +41,7 @@ int average_freq() {
 }
 
 // Find the color of the paper
-void findColour() { 
+void findColor() { 
   // Setting RED (R) filtered photodiodes to be read
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
@@ -64,24 +68,22 @@ void findColour() {
   // Reading the output frequency for BLUE
   blue_freq = average_freq();
   delay(color_sensor_delay);
-  Serial.print("red : ");
-  Serial.println(red_freq);
-  Serial.print("green : ");
-  Serial.println(green_freq);
-  Serial.print("blue : ");
-  Serial.println(blue_freq);
-
 }
 
-void sendColour(uint32_t dist) {
+void sendColor() {
+  uint32_t currentdist = getUltrasonicDistance() - ShroudMouthToUltrasonic;
+  if(currentdist< DistancetoStop){
+    distance_forward(currentdist -DistancetoStop );
+    linearactuatordist = currentdist - DistancetoStop;
+  }
   TPacket colorPacket;
   colorPacket.packetType = PACKET_TYPE_RESPONSE;
-  colorPacket.command = RESP_COLOUR;
+  colorPacket.command = RESP_COLOR;
   
   colorPacket.params[0] = red_freq;
   colorPacket.params[1] = green_freq;
   colorPacket.params[2] = blue_freq;
-  colorPacket.params[3] = dist;
   
   sendResponse(&colorPacket);  
+  distance_reverse(linearactuatordist + 1);
 }

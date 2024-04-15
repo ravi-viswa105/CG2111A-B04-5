@@ -12,10 +12,11 @@ typedef enum
 {
   PACKET_TYPE_COMMAND_PARAM = 0,
   PACKET_TYPE_COMMAND_KEYBOARD = 1,
-  PACKET_TYPE_RESPONSE = 2,
-  PACKET_TYPE_ERROR = 3,
-  PACKET_TYPE_MESSAGE = 4,
-  PACKET_TYPE_HELLO = 5
+  PACKET_TYPE_COMMAND_TIME = 2 ,
+  PACKET_TYPE_RESPONSE = 3,
+  PACKET_TYPE_ERROR = 4,
+  PACKET_TYPE_MESSAGE = 5,
+  PACKET_TYPE_HELLO = 6
 } TPacketType;
 
 // Response types. This goes into the command field
@@ -27,7 +28,8 @@ typedef enum
   RESP_BAD_CHECKSUM = 3,
   RESP_BAD_COMMAND = 4,
   RESP_BAD_RESPONSE = 5,
-  RESP_COLOR = 6
+  RESP_COLOR = 6,
+  RESP_DIST = 7
 } TResponseType;
 
 
@@ -43,7 +45,8 @@ typedef enum
   COMMAND_STOP = 4,
   COMMAND_GET_STATS = 5,
   COMMAND_CLEAR_STATS = 6,
-  COMMAND_COLOR = 7
+  COMMAND_COLOR = 7,
+  COMMAND_DIST = 8
 } TCommandType;
 
 typedef enum

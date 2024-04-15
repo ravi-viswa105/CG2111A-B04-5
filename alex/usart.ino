@@ -159,6 +159,9 @@ void handleCommandParam(TPacket *command)
       sendColor();
       sendOK();
       break;
+    case COMMAND_DIST:
+      sendDistance(); // OK packet in sendDistance
+      break;
         
     default:
       sendBadCommand();
@@ -172,19 +175,19 @@ void handleCommandKeyboard(TPacket *command)
     // For movement commands, param[0] = distance, param[1] = speed.
     case COMMAND_FORWARD:
         sendOK();
-        forward(-1, 100);
+        forward(-1, command->params[0]);
       break;
     case COMMAND_REVERSE:
         sendOK();
-        backward(-1, 100);
+        backward(-1, command->params[0]);
       break;
     case COMMAND_TURN_LEFT:
         sendOK();
-        left(0, 100);
+        left(-1, command->params[0]);
       break;
     case COMMAND_TURN_RIGHT:
         sendOK();
-        right(0, 100);
+        right(-1, command->params[0]);
       break;
     case COMMAND_STOP:
         sendOK();
@@ -203,6 +206,64 @@ void handleCommandKeyboard(TPacket *command)
       sendColor();
       sendOK();
       break;
+    case COMMAND_DIST:
+      sendDistance(); // OK packet in sendDistance
+      break;
+        
+    default:
+      sendBadCommand();
+  }
+}
+
+void handleCommandTime(TPacket *command)//note collision not activated here
+{
+  switch(command->command)
+  {
+    // For movement commands, param[0] = distance, param[1] = speed.
+    case COMMAND_FORWARD:
+        sendOK();
+        forward(-1, 60);
+        delay(50);
+        stop();
+      break;
+    case COMMAND_REVERSE:
+        sendOK();
+        backward(-1, 60);
+        delay(50);
+        stop();
+      break;
+    case COMMAND_TURN_LEFT:
+        sendOK();
+        left(-1, 60);
+        delay(50);
+        stop();
+      break;
+    case COMMAND_TURN_RIGHT:
+        sendOK();
+        right(-1, 60);
+        delay(50);
+        stop();
+      break;
+    case COMMAND_STOP:
+        sendOK();
+        stop();
+      break;
+    case COMMAND_GET_STATS:
+        sendOK();
+        sendStatus();
+      break;
+    case COMMAND_CLEAR_STATS:
+        sendOK();
+        clearCounters();
+      break;
+    case COMMAND_COLOR:
+      findColor();
+      sendColor();
+      sendOK();
+      break;
+    case COMMAND_DIST:
+      sendDistance(); // OK packet in sendDistance
+      break;
         
     default:
       sendBadCommand();
@@ -219,6 +280,9 @@ void handlePacket(TPacket *packet)
 
     case PACKET_TYPE_COMMAND_KEYBOARD:
       handleCommandKeyboard(packet);
+      break;
+    case PACKET_TYPE_COMMAND_TIME :
+      handleCommandTime(packet);
       break;
     
     case PACKET_TYPE_RESPONSE:

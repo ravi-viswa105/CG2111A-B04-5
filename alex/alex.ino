@@ -2,9 +2,14 @@
 #include <math.h>
 #include "packet.h"
 #include "constants.h"
-#include <serialize.h>
 
+#include <serialize.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+volatile int count;
 volatile TDirection dir;
+bool preventCollision = false;
 
 #define PI 3.141592654
 #define ALEX_LENGTH 12     //to change
@@ -190,10 +195,24 @@ void setup() {
   startSerial();
   enablePullups();
   initializeState();
+  setupUltrasonic();
+  //InitTimer0();
+  //StartTimer0();
+  //DDRD |= 0b00000011;
+  //count = 0;
   sei();
 }
 
 void loop() {
+  preventCollision = true;
+
+  if(preventCollision && dir == FORWARD){
+    int temp = getUltrasonicDistance();
+      if(temp < 8 && temp > 5) {
+      stop();
+      sendMessage("auto stopped");
+    }
+  }
   if (deltaDist > 0) {
     if (dir == FORWARD) {
       if (forwardDist > newDist) {
@@ -209,7 +228,7 @@ void loop() {
         stop();
         delay(1000);
       }
-    } else {
+    } else if(dir == STOP){
       deltaDist = 0;
       newDist = 0;
       stop();
@@ -238,7 +257,7 @@ void loop() {
         stop();
         delay(1000);
       }
-    } else {
+    } else if(dir == STOP){
       deltaTicks = 0;
       targetTicks = 0;
       stop();
