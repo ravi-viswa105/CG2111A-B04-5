@@ -220,23 +220,27 @@ void sendCommand(char command)
             break;
 
         case '3':
-	    initscr();
-    	    cbreak(); // Disable line buffering
-            noecho(); // Don't echo input characters
-    	    nodelay(stdscr, TRUE); // Set non-blocking mod
+	    if(keyboardMode == 1 || keyboardMode == 2){
+	    	initscr();
+    	    	cbreak(); // Disable line buffering
+            	noecho(); // Don't echo input characters
+    	    	nodelay(stdscr, TRUE); // Set non-blocking mod
+	    }
+
             keyboardMode = 3;
-	    printf("Switched to Key Press mode\n");
+	    printw("Switched to Key Press mode\n");
 	    refresh();
             break;
 	
         case '4':
-
-	    initscr();
-      	    cbreak(); // Disable line buffering
-    	    noecho(); // Don't echo input characters
-    	    nodelay(stdscr, TRUE); // Set non-blocking mod
+	    if(keyboardMode == 1 || keyboardMode == 2){
+	    	initscr();
+    	    	cbreak(); // Disable line buffering
+            	noecho(); // Don't echo input characters
+    	    	nodelay(stdscr, TRUE); // Set non-blocking mod
+	    }
             keyboardMode = 4;
-	    printf("Switched to Small Adjustment mode\n");
+	    printw("Switched to Small Adjustment mode\n");
 	    refresh();
             break;
 

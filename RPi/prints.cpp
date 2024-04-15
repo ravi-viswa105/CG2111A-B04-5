@@ -22,7 +22,7 @@ void increase_speedw(){
 
 void decrease_speedw(){
 	if(speed == 0){
-		printw("speed is already 0");
+		printw("speed is already 0\n");
 	}else{
 		speed -=5;
 		printw("speed is decreased to %d\n" , speed);
@@ -41,7 +41,7 @@ void increase_speedf(){
 
 void decrease_speedf(){
 	if(speed == 0){
-		printf("speed is already 0");
+		printf("speed is already 0\n");
 	}else{
 		speed -=5;
 		printf("speed is decreased to %d\n" , speed);
@@ -49,7 +49,7 @@ void decrease_speedf(){
 }
 
 void refresh_screen(){
-	if(commands_sent % 9 == 0){
+	if(commands_sent != 0 && commands_sent % 9 == 0){
 		clear();
 		refresh();
 	}
