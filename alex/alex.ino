@@ -196,22 +196,24 @@ void setup() {
   enablePullups();
   initializeState();
   setupUltrasonic();
-  InitTimer0();
-  StartTimer0();
-  DDRD |= 0b00000011;
-  count = 0;
+
+  //InitTimer0();
+  //StartTimer0();
+  //DDRD |= 0b00000011;
+  //count = 0;
   sei();
 }
 
 void loop() {
-
+  //preventCollision = true;
   if(preventCollision){
-    uint32_t temp = getUltrasonicDistance();
-      if(temp < 10 && temp > 0) {
+    int temp = getUltrasonicDistance();
+    //Serial.println(temp);
+    if(temp < 8 && temp > 5) {
       stop();
       sendMessage("auto stopped");
     }
-  }
+  } 
   if (deltaDist > 0) {
     if (dir == FORWARD) {
       if (forwardDist > newDist) {
