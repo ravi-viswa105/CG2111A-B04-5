@@ -196,6 +196,7 @@ void setup() {
   enablePullups();
   initializeState();
   setupUltrasonic();
+  setup_colour_sensor();
 
   //InitTimer0();
   //StartTimer0();
