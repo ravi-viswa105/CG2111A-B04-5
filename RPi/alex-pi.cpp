@@ -19,7 +19,7 @@
 using namespace std;
 using namespace std::chrono;
 
-#define PORT_NAME			"/dev/ttyACM0"
+#define PORT_NAME			"/dev/ttyACM1"
 #define BAUD_RATE			B9600
 #define DEFAULT_SPEED			50
 #define LEFT_ARROW_KEY 			1073741904

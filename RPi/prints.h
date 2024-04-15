@@ -22,4 +22,6 @@ void decrease_speedw();
 void increase_speedf();
 void decrease_speedf();
 void refresh_screen();
+void print_colourf(uint32_t red , uint32_t green , uint32_t blue , float redGreenDiff , float blueGreenDiff);
+void print_colourw(uint32_t red , uint32_t green , uint32_t blue , float redGreenDiff , float blueGreenDiff);
 
