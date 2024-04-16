@@ -210,7 +210,7 @@ void loop() {
   if(preventCollision){
     int temp = getUltrasonicDistance();
     //Serial.println(temp);
-    if(temp < 8 && temp > 5) {
+    if(temp < 15 && temp > 10) {
       stop();
       sendMessage("auto stopped");
     }
