@@ -7,9 +7,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-volatile int count;
+//volatile int count;
+volatile int ledcount;
+
+
 volatile TDirection dir;
 bool preventCollision = false;
+
+unsigned long red_freq;
+unsigned long green_freq;
+unsigned long blue_freq;
+unsigned long linearactuatordist = 0;
 
 #define PI 3.141592654
 #define ALEX_LENGTH 12     //to change
@@ -197,24 +205,25 @@ void setup() {
   initializeState();
   setupUltrasonic();
   setup_colour_sensor();
-
-  //InitTimer0();
+ // InitTimer0();
   //StartTimer0();
   //DDRD |= 0b00000011;
-  //count = 0;
+  //ledcount = 0;
   sei();
 }
 
+int counter = 0;
 void loop() {
   //preventCollision = true;
   if(preventCollision){
     int temp = getUltrasonicDistance();
     //Serial.println(temp);
     if(temp < 15 && temp > 10) {
-      stop();
-      sendMessage("auto stopped");
+        stop();
+        sendMessage("auto stopped");
     }
   } 
+
   if (deltaDist > 0) {
     if (dir == FORWARD) {
       if (forwardDist > newDist) {
