@@ -26,10 +26,8 @@ int getUltrasonicDistance() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   
-  // Reads the echoPin, returns the sound wave travel time in microseconds
   unsigned long duration = pulseIn(echoPin, HIGH , 5000);
-  //Serial.print(duration , DEC);
-  //Serial.println();
+
   return (duration * SPEED_OF_SOUND) / 20000.0 - DIST_OFFSET; // Calculate the distance
 }
 

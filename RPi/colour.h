@@ -16,3 +16,4 @@ extern int exitFlag;
 
 void handleColor(TPacket *packet);
 float getPercentDiff(uint32_t a, uint32_t b);
+void handleDistance(TPacket *packet);

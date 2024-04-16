@@ -27,14 +27,40 @@ void handleColor(TPacket *packet) {
 	printf( "Red Green diff:\t\t%0.2lf%%\n", redGreenDiff);
 	printf( "Blue Green diff:\t%0.2lf%%\n", blueGreenDiff);
 
-	if (redGreenDiff >= COLOR_THRESHOLD) {
-		if (red < green) {
-			if (green > RED_THRESHOLD) printf("\nRED!\n");
-			else printf("\nORANGE!\n");
+/*	if (redGreenDiff >= COLOR_THRESHOLD) {
+		if (red > green) {
+			if (green < RED_THRESHOLD) printf("\nRED!\n");
+			else printf("\nNEITHER\n");
 		} else {
-			if (blueGreenDiff < GREEN_THRESHOLD) printf("\nGREEN!\n");
-			else printf("\nBLUE!\n");
+			if (blueGreenDiff > GREEN_THRESHOLD) printf("\nGREEN!\n");
+			else printf("\nNEITHER\n");
 		}
 	} else printf("\nNo color detected!\n");
-	printf("\n--------------------------------------\n\n");
+	printf("\n--------------------------------------\n\n"); */
+
+	if ((red+5 <= green) && (green > 15)) 
+	{
+		printf("\nRED!\n");
+	}
+	else if (blue < 10) 
+	{
+		printf("\nNEITHER!\n");
+	}
+	else 
+	{
+		printf("\nGREEN!\n");
+	}
 }
+
+void handleDistance(TPacket *packet) {
+	uint32_t distance = packet->params[0];
+	printf("Ultrasonic Distance:\t\t%d cm\n", distance);
+	
+	const int DIST_THRESHOLD = 25;
+	if (distance < DIST_THRESHOLD) printf("WALL NEARBY! SLOW DOWN!\n");
+}
+
+
+
+
+

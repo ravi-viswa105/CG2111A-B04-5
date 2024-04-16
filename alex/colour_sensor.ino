@@ -1,18 +1,15 @@
-#define S1 44 //brown
+
+#define S1 44 //brown//TO CHANGE
 #define S0 48 //orange
 #define S2 52 //blue
 #define S3 46 //green
 #define sensorOut 50 //white
 
 #define color_sensor_delay 50 //milliseconds
-#define ShroudMouthToUltrasonic 10 //cm//to change
+#define ShroudMouthToUltrasonic 7 //cm//to change
 #define DistancetoStop 2 //cm//dist to stop from object
 
-unsigned long red_freq;
-unsigned long green_freq;
-unsigned long blue_freq;
 
-unsigned long linearactuatordist = 0;
 
 void setup_colour_sensor() {
   pinMode(S0, OUTPUT);
@@ -72,9 +69,12 @@ void findColor() {
 
 void sendColor() {
   uint32_t currentdist = getUltrasonicDistance() - ShroudMouthToUltrasonic;
-  if(currentdist< DistancetoStop){
-    distance_forward(currentdist -DistancetoStop );
+  if(currentdist > DistancetoStop){
     linearactuatordist = currentdist - DistancetoStop;
+    if(linearactuatordist > 7){
+      linearactuatordist = 7;
+    }
+    distance_forward(linearactuatordist);
   }
   TPacket colorPacket;
   colorPacket.packetType = PACKET_TYPE_RESPONSE;
@@ -85,5 +85,6 @@ void sendColor() {
   colorPacket.params[2] = blue_freq;
   
   sendResponse(&colorPacket);  
-  distance_reverse(linearactuatordist + 1);
+  distance_reverse(linearactuatordist + 0.25);
+  linearactuatordist = 0;
 }
