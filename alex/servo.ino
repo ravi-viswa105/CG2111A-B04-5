@@ -1,6 +1,6 @@
 // Include the library
 #include "Servo.h"
-#define distpersec 8.4
+#define distpersec 6
 #define ServoPin 24
 // Create the servo object
 Servo cgservo;
