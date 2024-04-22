@@ -47,7 +47,8 @@ typedef enum
   COMMAND_GET_STATS = 5,
   COMMAND_CLEAR_STATS = 6,
   COMMAND_COLOR = 7,
-  COMMAND_DIST = 8
+  COMMAND_DIST = 8 , 
+  COMMAND_LCD = 13
 } TCommandType;
 #endif
 

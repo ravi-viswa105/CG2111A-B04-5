@@ -18,6 +18,7 @@ using namespace std;
 extern int keyboardMode;
 extern int exitFlag;
 extern int speed;
+extern int delay_time;
 extern bool clear_to_send_command;
 
 void handleError(TResult error);

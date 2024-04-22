@@ -19,18 +19,20 @@
 using namespace std;
 using namespace std::chrono;
 
-#define PORT_NAME			"/dev/ttyACM1"
+#define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
-#define DEFAULT_SPEED			50
+#define DEFAULT_SPEED			40
+#define DEFAULT_DELAY			150
 #define LEFT_ARROW_KEY 			1073741904
 #define RIGHT_ARROW_KEY 		1073741903
 
 int exitFlag=0;
 int commands_sent = 0;
 int speed = DEFAULT_SPEED;
+int delay_time = DEFAULT_DELAY;
 bool clear_to_send_command = true;
 // 1 for controlling with params, 2 for controlling with keypress
-int keyboardMode=1;
+int keyboardMode = 1 ;
 char previous_command = '0';
 std::chrono::microseconds microsecond(1);
 high_resolution_clock::time_point start = high_resolution_clock::now();
@@ -53,9 +55,9 @@ void paramsControl() {
 }
 
 void PressAndPress(){//mode 3
-	printw_commands();
+	//printw_commands();
 	int c;
-	while((c=getch()) == ERR || (char(c) == previous_command && char(c) != ',' && char(c) != '.')){}	
+	while((c=getch()) == ERR || (char(c) == previous_command && char(c) != ',' && char(c) != '.' && char(c) != 'v' && char(c) != 'u')){}	
 	char ch = c;
 	
 	refresh_screen();	
@@ -73,16 +75,22 @@ void PressAndPress(){//mode 3
 }
 
 void TimedMovement(){//mode 4
-	printw_commands();
+	//printw_commands();
 	int c;
 	while((c=getch()) == ERR){}
 	char ch = c;
         refresh_screen();
-	printw("send command : %c\n" , ch);
+	if(ch == ','){
+		decrease_delay();
+	}else if(ch == '.'){
+		increase_delay();
+	}else{
+		printw("send command : %c\n" , ch);
+		sendCommand(ch);
+	}
         refresh();
-	commands_sent++;
-	sendCommand(ch);
 	sleep(1);
+	commands_sent++;
 }
 
 void keypressControl() {
@@ -171,13 +179,13 @@ int main()
 	pthread_create(&recv, NULL, receiveThread, NULL);
 
 	// Send a hello packet
-	printf("clear to send command : %d\n" , clear_to_send_command);
+	//printf("clear to send command : %d\n" , clear_to_send_command);
 	TPacket helloPacket;
 
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
 
-	printf("clear to send command : %d\n" , clear_to_send_command);
+	//printf("clear to send command : %d\n" , clear_to_send_command);
 	while(!exitFlag)
 	{
 		if (keyboardMode == 1) {

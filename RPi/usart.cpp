@@ -127,9 +127,9 @@ void handlePacket(TPacket *packet)
 
 void sendPacket(TPacket *packet)
 {	
-	if(packet->packetType == PACKET_TYPE_COMMAND_KEYBOARD || packet->packetType == PACKET_TYPE_COMMAND_TIME || packet->packetType == PACKET_TYPE_COMMAND_PARAM){
+	/*if(packet->packetType == PACKET_TYPE_COMMAND_KEYBOARD || packet->packetType == PACKET_TYPE_COMMAND_TIME || packet->packetType == PACKET_TYPE_COMMAND_PARAM){
 		clear_to_send_command = false;
-	}
+	}*/
 	char buffer[PACKET_SIZE];
 	int len = serialize(buffer, packet, sizeof(TPacket));
 
@@ -182,6 +182,7 @@ void getParams(TPacket *commandPacket)
 	    	commandPacket->params[0] = speed;
 		break;
 	case 4:
+		commandPacket->params[0] = delay_time;
 		break;
 	default:
 		break;
@@ -207,6 +208,7 @@ void sendCommand(char command)
 	    if(keyboardMode == 3 || keyboardMode == 4){
 	    	endwin();
 	    }
+	    sleep(1);
             keyboardMode = 1;
 	    printf("Switched to params mode\n");
             break;
@@ -215,6 +217,7 @@ void sendCommand(char command)
 	    if(keyboardMode == 3 || keyboardMode == 4){
 	    	endwin();
 	    }
+	    sleep(1);
             keyboardMode = 2;
 	    printf("Switched to Key Hold mode\n");
             break;
@@ -280,8 +283,8 @@ void sendCommand(char command)
 			break;
 
                // Stats
-		case 'c':
-		case 'C':
+		case 'k':
+		case 'K':
 			commandPacket.command = COMMAND_CLEAR_STATS;
 			commandPacket.params[0] = 0;
 			sendPacket(&commandPacket);
@@ -306,9 +309,26 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
+		case 'l':
+		case 'L':
+			printf("TURNING ON LCD\n");
+			commandPacket.command = COMMAND_LCD;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'c':
+		case 'C':
+			clear();
+			printw("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
+			refresh();
+			break;
+
         // Others
 		case 'q':
 		case 'Q':
+			if(keyboardMode == 3 || keyboardMode == 4){
+				endwin();
+			}
 			exitFlag=1;
 			break;
 
