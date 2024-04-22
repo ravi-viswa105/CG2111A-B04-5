@@ -43,8 +43,8 @@ void toggleLED() {
 // Set up the ISR for TOV0A
 ISR(TIMER0_COMPA_vect)
 {
-  count++;
-  if ((count % 100) == 0)
+  ledcount++;
+  if ((ledcount % 10000) == 0)
     toggleLED();
 }
 

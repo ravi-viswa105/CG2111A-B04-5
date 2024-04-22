@@ -222,26 +222,26 @@ void handleCommandTime(TPacket *command)//note collision not activated here
     // For movement commands, param[0] = distance, param[1] = speed.
     case COMMAND_FORWARD:
         sendOK();
-        forward(-1, 60);
-        delay(50);
+        forward(-1, 100);
+        delay(command->params[0]);
         stop();
       break;
     case COMMAND_REVERSE:
         sendOK();
-        backward(-1, 60);
-        delay(50);
+        backward(-1, 100);
+        delay(command->params[0]);
         stop();
       break;
     case COMMAND_TURN_LEFT:
         sendOK();
-        left(-1, 60);
-        delay(50);
+        left(-1, 100);
+        delay(command->params[0]);
         stop();
       break;
     case COMMAND_TURN_RIGHT:
         sendOK();
-        right(-1, 60);
-        delay(50);
+        right(-1, 100);
+        delay(command->params[0]);
         stop();
       break;
     case COMMAND_STOP:
