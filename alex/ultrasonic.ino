@@ -16,7 +16,7 @@ void setupUltrasonic(){
   digitalWrite(simVcc , HIGH);
 }
 
-uint32_t getUltrasonicDistance() {
+int getUltrasonicDistance() {
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -26,13 +26,13 @@ uint32_t getUltrasonicDistance() {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  unsigned long duration = pulseIn(echoPin, HIGH);
-  return duration * SPEED_OF_SOUND / 20000.0 - DIST_OFFSET; // Calculate the distance
+  unsigned long duration = pulseIn(echoPin, HIGH , 5000);
+
+  return (duration * SPEED_OF_SOUND) / 20000.0 - DIST_OFFSET; // Calculate the distance
 }
 
 void sendDistance() {
-  uint32_t ultrasonicDist = getUltrasonicDistance();
+  int ultrasonicDist = getUltrasonicDistance();
   
   TPacket distancePacket;
   distancePacket.packetType = PACKET_TYPE_RESPONSE;

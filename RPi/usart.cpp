@@ -1,6 +1,4 @@
 #include "usart.h"
-#include "colour.h"
-extern int speed;
 
 void handleError(TResult error)
 {
@@ -41,7 +39,13 @@ void handleResponse(TPacket *packet)
 	switch(packet->command)
 	{
 		case RESP_OK:
-			printf("Command OK\n");
+			
+			if(keyboardMode == 3 || keyboardMode == 4){
+				printw("Command OK\n");
+			}else{
+				printf("Command OK\n");
+			}
+			clear_to_send_command = true;
 		break;
 
 		case RESP_STATUS:
@@ -103,6 +107,10 @@ void handlePacket(TPacket *packet)
 		case PACKET_TYPE_COMMAND_KEYBOARD:
 				// Only we send command packets, so ignore
 			break;
+
+		case PACKET_TYPE_COMMAND_TIME :
+			break;
+				// Only we send command packets, so ignore
 		case PACKET_TYPE_RESPONSE:
 				handleResponse(packet);
 			break;
@@ -118,7 +126,10 @@ void handlePacket(TPacket *packet)
 }
 
 void sendPacket(TPacket *packet)
-{
+{	
+	/*if(packet->packetType == PACKET_TYPE_COMMAND_KEYBOARD || packet->packetType == PACKET_TYPE_COMMAND_TIME || packet->packetType == PACKET_TYPE_COMMAND_PARAM){
+		clear_to_send_command = false;
+	}*/
 	char buffer[PACKET_SIZE];
 	int len = serialize(buffer, packet, sizeof(TPacket));
 
@@ -158,13 +169,24 @@ void *receiveThread(void *p)
 
 void getParams(TPacket *commandPacket)
 {
-    if (keyboardMode == 2) { 
-	    commandPacket->params[0] = speed;
-	    return; 
-    }
-	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
-	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
-	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
+   switch(keyboardMode){
+
+	case 1:
+
+		printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
+		printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
+		scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
+		break;
+	case 2 : 
+	case 3 :	
+	    	commandPacket->params[0] = speed;
+		break;
+	case 4:
+		commandPacket->params[0] = delay_time;
+		break;
+	default:
+		break;
+   }
 }
 
 void sendCommand(char command)
@@ -172,20 +194,57 @@ void sendCommand(char command)
 	TPacket commandPacket;
 
 	if (keyboardMode == 1) {
-        commandPacket.packetType = PACKET_TYPE_COMMAND_PARAM;
-    } else {
-        commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD;
-    }
+        	commandPacket.packetType = PACKET_TYPE_COMMAND_PARAM;
+    	}else if(keyboardMode == 2 || keyboardMode == 3){
+        	commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD;
+    	}else{
+		commandPacket.packetType = PACKET_TYPE_COMMAND_TIME;
+    	}
 
 	switch(command)
 	{
         // Changing the movement mode
         case '1':
+	    if(keyboardMode == 3 || keyboardMode == 4){
+	    	endwin();
+	    }
+	    sleep(1);
             keyboardMode = 1;
+	    printf("Switched to params mode\n");
             break;
 
         case '2':
+	    if(keyboardMode == 3 || keyboardMode == 4){
+	    	endwin();
+	    }
+	    sleep(1);
             keyboardMode = 2;
+	    printf("Switched to Key Hold mode\n");
+            break;
+
+        case '3':
+	    if(keyboardMode == 1 || keyboardMode == 2){
+	    	initscr();
+    	    	cbreak(); // Disable line buffering
+            	noecho(); // Don't echo input characters
+    	    	nodelay(stdscr, TRUE); // Set non-blocking mod
+	    }
+
+            keyboardMode = 3;
+	    printw("Switched to Key Press mode\n");
+	    refresh();
+            break;
+	
+        case '4':
+	    if(keyboardMode == 1 || keyboardMode == 2){
+	    	initscr();
+    	    	cbreak(); // Disable line buffering
+            	noecho(); // Don't echo input characters
+    	    	nodelay(stdscr, TRUE); // Set non-blocking mod
+	    }
+            keyboardMode = 4;
+	    printw("Switched to Small Adjustment mode\n");
+	    refresh();
             break;
 
                // Movement
@@ -224,8 +283,8 @@ void sendCommand(char command)
 			break;
 
                // Stats
-		case 'c':
-		case 'C':
+		case 'k':
+		case 'K':
 			commandPacket.command = COMMAND_CLEAR_STATS;
 			commandPacket.params[0] = 0;
 			sendPacket(&commandPacket);
@@ -250,9 +309,26 @@ void sendCommand(char command)
 			sendPacket(&commandPacket);
 			break;
 
+		case 'l':
+		case 'L':
+			printf("TURNING ON LCD\n");
+			commandPacket.command = COMMAND_LCD;
+			sendPacket(&commandPacket);
+			break;
+
+		case 'c':
+		case 'C':
+			clear();
+			printw("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
+			refresh();
+			break;
+
         // Others
 		case 'q':
 		case 'Q':
+			if(keyboardMode == 3 || keyboardMode == 4){
+				endwin();
+			}
 			exitFlag=1;
 			break;
 

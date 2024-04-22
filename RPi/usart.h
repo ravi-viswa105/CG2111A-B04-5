@@ -10,9 +10,16 @@
 #include "constants.h"
 
 #include <ncurses.h>
+#include "time.h"
+#include "colour.h"
+#include <iostream>
+using namespace std;
 
 extern int keyboardMode;
 extern int exitFlag;
+extern int speed;
+extern int delay_time;
+extern bool clear_to_send_command;
 
 void handleError(TResult error);
 void handleStatus(TPacket *packet);
