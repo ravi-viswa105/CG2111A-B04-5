@@ -30,7 +30,6 @@ int exitFlag=0;
 int commands_sent = 0;
 int speed = DEFAULT_SPEED;
 int delay_time = DEFAULT_DELAY;
-bool clear_to_send_command = true;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode = 1 ;
 char previous_command = '0';
@@ -42,7 +41,7 @@ sem_t _xmitSema;
 //BAD MAGIC NUMBER HANDLING
 //Mode 1 : NIL
 //Mode 2 : 
-//Mode 3 : 
+//Mode 3 : No double commands
 //Mode 4 : Commands every 1 second
 
 void paramsControl() {
@@ -55,7 +54,6 @@ void paramsControl() {
 }
 
 void PressAndPress(){//mode 3
-	//printw_commands();
 	int c;
 	while((c=getch()) == ERR || (char(c) == previous_command && char(c) != ',' && char(c) != '.' && char(c) != 'v' && char(c) != 'u')){}	
 	char ch = c;
@@ -75,7 +73,6 @@ void PressAndPress(){//mode 3
 }
 
 void TimedMovement(){//mode 4
-	//printw_commands();
 	int c;
 	while((c=getch()) == ERR){}
 	char ch = c;
