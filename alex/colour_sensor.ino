@@ -1,5 +1,5 @@
 
-#define S1 44 //brown//TO CHANGE
+#define S1 44 //brown
 #define S0 48 //orange
 #define S2 52 //blue
 #define S3 46 //green
@@ -39,30 +39,30 @@ int average_freq() {
 
 // Find the color of the paper
 void findColor() { 
-  // Setting RED (R) filtered photodiodes to be read
+  // read RED by adjusting filter photodiodes
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
   delay(color_sensor_delay);
 
-  // Reading the output frequency for RED
+  // find average frequency for RED
   red_freq = average_freq();
   delay(color_sensor_delay);
 
-  // Setting GREEN (G) filtered photodiodes to be read
+  // read GREEN by adjusting filter photodiodes
   digitalWrite(S2, HIGH);
   digitalWrite(S3, HIGH);
   delay(color_sensor_delay);
 
-  // Reading the output frequency for GREEN
+  // find average frequency for GREEN
   green_freq = average_freq();
   delay(color_sensor_delay);
 
-  // Setting BLUE (B) filtered photodiodes to be read
+  // read BLUE by adjusting filter photodiodes
   digitalWrite(S2, LOW);
   digitalWrite(S3, HIGH);
   delay(color_sensor_delay);
 
-  // Reading the output frequency for BLUE
+  // find average frequency for BLUE
   blue_freq = average_freq();
   delay(color_sensor_delay);
 }
