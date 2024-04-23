@@ -55,7 +55,8 @@ void paramsControl() {
 
 void PressAndPress(){//mode 3
 	int c;
-	while((c=getch()) == ERR || (char(c) == previous_command && char(c) != ',' && char(c) != '.' && char(c) != 'v' && char(c) != 'u')){}	
+	while((c=getch()) == ERR || (char(c) == previous_command && char(c) != ',' && char(c) != '.' && char(c) != 'v' && char(c) != 'u')){}
+	//keeps polling for characters // characters must be not the same as the previous_commnd (cannot press w twice) // exception for '.' || 'v' || 'u' || ','
 	char ch = c;
 	
 	refresh_screen();	
