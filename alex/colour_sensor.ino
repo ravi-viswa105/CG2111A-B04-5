@@ -76,6 +76,8 @@ void sendColor() {
     }
     distance_forward(linearactuatordist);
   }
+
+  findColor();
   TPacket colorPacket;
   colorPacket.packetType = PACKET_TYPE_RESPONSE;
   colorPacket.command = RESP_COLOR;
