@@ -12,8 +12,6 @@ const int RS = A10, EN = A11, D4 = A12, D5 = A13, D6 = A14, D7 = A15; //define w
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 bool toggleLCD = false;
-//volatile int count;
-int ledcount = 0;
 
 volatile TDirection dir;
 bool preventCollision = false;
@@ -98,7 +96,6 @@ void rightISR() {
   }
 }
 
-// external interrupt ISRs
 ISR(INT2_vect) {
   leftISR();
 }
@@ -188,17 +185,25 @@ void initializeState() {
 void setup() {
   // put your setup code here, to run once:
   cli();
+
   setupEINT();
   setupSerial();
   startSerial();
+
+  // pullups
   enablePullups();
+
   initializeState();
   setupUltrasonic();
   setup_colour_sensor();
-  //InitTimer0();
-  //StartTimer0();
-  //DDRD |= 0b00000011;
-  //ledcount = 0;
+
+  //LED
+  InitTimer0();
+  StartTimer0();
+  ledcount = 0;
+  DDRD |= 0b00000011; // turn on both LEDs
+
+
   sei();
 }
 
@@ -211,13 +216,6 @@ void loop() {
         stop();
         sendMessage("auto stopped");
     }
-  }
-
-  ledcount ++;
-  if(preventCollision){
-    if(ledcount % 300 == 0){ LED_TOGGLE(); }
-  }else{
-    if(ledcount % 10000000 == 0){ LED_TOGGLE(); }
   }
 
   if (deltaDist > 0) {

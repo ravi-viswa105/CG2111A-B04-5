@@ -7,10 +7,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-//volatile int count;
-volatile int ledcount;
-
-
 volatile TDirection dir;
 bool preventCollision = false;
 
@@ -58,18 +54,9 @@ unsigned long newDist;
 unsigned long deltaTicks;
 unsigned long targetTicks;
 
-/*
- * Setup and start codes for external interrupts and 
- * pullup resistors.
- * 
- */
-// Enable pull up resistors on pins 18 and 19
-void enablePullups() {
-  // Use bare-metal to enable the pull-up resistors on pins
-  DDRD &= 0b11110011;
-  PORTD |= 0b00001100;
-  // 19 and 18. These are pins PD2 and PD3 respectively.
-  // We set bits 2 and 3 in DDRD to 0 to make them inputs.
+void enablePullups() { // pins 18 and 19 are PORTD pins 3 and 2 respectively
+  DDRD &= ~(1<<2 | 1<<3); // set them as inputs
+  PORTD |= 1<<2 | 1<<3; // set them both to high
 }
 
 // Functions to be called by INT2 and INT3 ISRs.
@@ -99,9 +86,7 @@ void rightISR() {
   }
 }
 
-// Implement the external interrupt ISRs below.
-// INT3 ISR should call leftISR while INT2 ISR
-// should call rightISR.
+// external interrupt ISRs
 ISR(INT2_vect) {
   leftISR();
 }
@@ -111,15 +96,9 @@ ISR(INT3_vect) {
 }
 
 
-// Set up the external interrupt pins INT2 and INT3
-// for falling edge triggered. Use bare-metal.
 void setupEINT() {
-  // Use bare-metal to configure pins 18 and 19 to be
-  // falling edge triggered. Remember to enable
-  // the INT2 and INT3 interrupts.
-  // Hint: Check pages 110 and 111 in the ATmega2560 Datasheet.
-  EIMSK = 0b00001100;
-  EICRA = 0b10100000;
+  EIMSK |= (1<<3 | 1<<2); // enable INT2 and INT3
+  EICRA |= 0b10100000; // set them both as falling-edge
 }
 
 

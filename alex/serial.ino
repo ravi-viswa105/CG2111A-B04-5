@@ -3,30 +3,23 @@
  * 
  */
 
-// Set up the serial connection. For now we are using 
-// Arduino Wiring, you will replace this later
-// with bare-metal code.
 void setupSerial()
 {
-  // To replace later with bare-metal.
-  Serial.begin(9600);
-  // Change Serial to Serial2/Serial3/Serial4 in later labs when using the other UARTs
-}
+  // asynchronous mode, parity, stop bits, data size, clock polarity
+  UCSR0C = 0b0000110;
+  // not in double-speed and not in multi-processor mode
+  UCRS0A = 0;
+  // baud rate of 9600
+  UBRR0L = 103;
+  UBBRLH = 0;
 
-// Start the serial connection. For now we are using
-// Arduino wiring and this function is empty. We will
-// replace this later with bare-metal code.
+}
 
 void startSerial()
 {
-  // Empty for now. To be replaced with bare-metal code
-  // later on.
-  
+  // enables receive and transmit interrupts
+  UCSR0B = 0b10111000;  
 }
-
-// Read the serial port. Returns the read character in
-// ch if available. Also returns TRUE if ch is valid. 
-// This will be replaced later with bare-metal code.
 
 int readSerial(char *buffer)
 {

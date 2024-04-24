@@ -1,6 +1,8 @@
 //volatile int count;
 volatile int ledcount;
 
+#define red
+
 void InitTimer0(void) {
   TCNT0 = 0; // initial timer value
   OCR0A = 255; // TOP timer value in compare register
@@ -16,12 +18,12 @@ void StartTimer0(void) {
 }
 
 void redFlash() {
-  PORTD |= 0b00000011;
-  PORTD &= 0b11111101;
+  PORTD |= 1<<0 ; // turn on red led pin
+  PORTD &= ~(1<<1) ; // turn off blue led pin
 }
 void blueFlash() {
-  PORTD &= 0b11111100;
-  PORTD |= 0b00000010;
+  PORTD &= ~(1<<0); // turn off red led pin
+  PORTD |= 1<<1; // turn on blue led pin
 }
 
 // Toggle the LED
