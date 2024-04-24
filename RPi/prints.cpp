@@ -78,16 +78,18 @@ void print_colourf(uint32_t red , uint32_t green , uint32_t blue , float redGree
 	printf( "Red Green diff:\t\t%0.2lf%\n", redGreenDiff);
 	printf( "Red Blue diff:\t\t%0.2lf%\n", redBlueDiff);
 	printf( "Blue Green diff:\t%0.2lf%\n", blueGreenDiff);
-	if(blueGreenDiff > 17.0){
-		if(mod(redGreenDiff - blueGreenDiff) < 6){
-			printf("RED\n");
-		}else{
-			printf("NEITHER\n");
-		}
-	}else{
+	if ((redBlueDiff < redGreenDiff) && (redBlueDiff < blueGreenDiff)) 
+	{
+		printf("RED!\n");
+
+	}else if(redGreenDiff < 4){
+		
+		printf("NEITHER!\n");
+	} 
+	else 
+	{
 		printf("GREEN!\n");
 	}
-	printf("\n");
 }
 
 float find_max(float redGreenDiff , float redBlueDiff , float blueGreenDiff){
