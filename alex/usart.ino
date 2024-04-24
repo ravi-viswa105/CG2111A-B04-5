@@ -155,7 +155,6 @@ void handleCommandParam(TPacket *command)
         clearCounters();
       break;
     case COMMAND_COLOR:
-      findColor();
       sendColor();
       sendOK();
       break;
@@ -202,7 +201,6 @@ void handleCommandKeyboard(TPacket *command)
         clearCounters();
       break;
     case COMMAND_COLOR:
-      findColor();
       sendColor();
       sendOK();
       break;
@@ -257,7 +255,6 @@ void handleCommandTime(TPacket *command)//note collision not activated here
         clearCounters();
       break;
     case COMMAND_COLOR:
-      findColor();
       sendColor();
       sendOK();
       break;
