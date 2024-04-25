@@ -30,6 +30,7 @@ int exitFlag=0;
 int commands_sent = 0;
 int speed = DEFAULT_SPEED;
 int delay_time = DEFAULT_DELAY;
+bool clear_to_send_command = true;
 // 1 for controlling with params, 2 for controlling with keypress
 int keyboardMode = 1 ;
 char previous_command = '0';
