@@ -31,7 +31,7 @@ void lcd_setup() {
   lcd.createChar(1, customChar1); // create a new custom character (smiley)
 }
 
-void message_lcd(){
+void message_lcd(){ //To display "Help is on the way. Stay Calm" to victims on LCD screen
   lcd.setCursor(0, 0); //print message starts at cursor
   lcd.print("Help is on the");
   lcd.setCursor(0, 1);
@@ -42,8 +42,7 @@ void message_lcd(){
   lcd.write((byte)1);
 }
 
-void ultrasonic_message_lcd()
-{
+void ultrasonic_message_lcd() { //To display ultrasonic sensor readings on LCD for debugging
   lcd.setCursor(0, 0); //print message starts at cursor
   lcd.print("Ultrasonic");
   lcd.setCursor(0, 1);
