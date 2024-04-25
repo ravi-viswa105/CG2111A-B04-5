@@ -27,7 +27,7 @@ void handleDistance(TPacket *packet) {
 	printf("Ultrasonic Distance:\t\t%d cm\n", distance); // returns distance from ultrasonic to object
 	printf("Actual distance from shroud is \t\t%d cm\n" , distance - SHROUDTOULTRA); // return distance of shroud from object
 	const int DIST_THRESHOLD = 25;
-	if (distance < DIST_THRESHOLD) printf("WALL NEARBY! SLOW DOWN!\n");
+	if (distance < DIST_THRESHOLD) printf("WALL NEARBY! SLOW DOWN!\n"); //warns user when robot too close to wall
 }
 
 
