@@ -33,7 +33,7 @@ int getUltrasonicDistance() {
 
 void sendDistance() {
   int ultrasonicDist = getUltrasonicDistance();
-  ultrasonic_message_lcd();
+  ultrasonic_message_lcd(); //displaying ultrasonic reading on LCD for debugging
   
   TPacket distancePacket;
   distancePacket.packetType = PACKET_TYPE_RESPONSE;
