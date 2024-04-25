@@ -1,11 +1,11 @@
 #include "time.h"
 
-microseconds::rep current_time(){
+microseconds::rep current_time(){ //returns time passed since start
         auto duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
         microseconds::rep amt = duration.count();
         return amt;
 }
 
-void set_current_time(){
+void set_current_time(){ //set new reference point to measure time
 	start = high_resolution_clock::now();
 }
