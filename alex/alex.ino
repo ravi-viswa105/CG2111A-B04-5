@@ -16,8 +16,8 @@ unsigned long blue_freq;
 unsigned long linearactuatordist = 0;
 
 #define PI 3.141592654
-#define ALEX_LENGTH 12     //to change
-#define ALEX_BREADTH 13.5  //to change
+#define ALEX_LENGTH 12     
+#define ALEX_BREADTH 13.5  
 // min angle 33 deg
 // Number of ticks per revolution from the
 // wheel encoder.
@@ -25,7 +25,6 @@ unsigned long linearactuatordist = 0;
 #define COUNTS_PER_REV 4
 
 // Wheel circumference in cm.
-// We will use this to calculate forward/backward distance traveled
 // by taking revs * WHEEL_CIRC
 
 #define WHEEL_CIRC 20.73  //cm
@@ -167,15 +166,14 @@ void clearOneCounter(int which) {
       break;
   }
 }
-// Intialize Alex's internal states
 
+// Intialize Alex's internal states
 void initializeState() {
   clearCounters();
 }
 
 
 void setup() {
-  // put your setup code here, to run once:
   cli();
   setupEINT();
   setupSerial();
