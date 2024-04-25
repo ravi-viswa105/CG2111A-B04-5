@@ -23,8 +23,8 @@ using namespace std::chrono;
 #define BAUD_RATE			B9600
 #define DEFAULT_SPEED			40
 #define DEFAULT_DELAY			150
-#define LEFT_ARROW_KEY 			1073741904
-#define RIGHT_ARROW_KEY 		1073741903
+#define LEFT_ARROW_KEY 			1073741904 // special key code for mode 2
+#define RIGHT_ARROW_KEY 		1073741903 // special key code for mode 2
 
 int exitFlag=0;
 int commands_sent = 0;
