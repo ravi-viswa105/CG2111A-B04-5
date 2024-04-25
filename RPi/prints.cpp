@@ -1,26 +1,26 @@
 #include "prints.h"
 
-void printf_commands(){
+void printf_commands(){ //prints command list when clear screen in mode 1 , 2
 	
 	printf("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
 }
 
-void printw_commands(){
+void printw_commands(){ //prints command list when clear screen in mode 3 , 4
 	
 	printw("Command (w=forward, s=reverse, a=turn left, d=turn right, o=stop, c=clear stats, g=get stats v= colour q=exit)\n");
 }
 
-void increase_speedw(){
+void increase_speedw(){ //increase speed and print current speed in mode 3 , 4
 	if(speed+5 <= 100){
 		speed += 5;
 		printw("speed is increased to %d\n" , speed);
 	}else{
 		speed = 100;
-		printw("speed is maxed at 100\n");
+		printw("speed is maxed at 100\n"); // limit speed to 100
 	}
 }
 
-void decrease_speedw(){
+void decrease_speedw(){ //decrease speed and print current speed in mode 3 , 4
 	if(speed == 0){
 		printw("speed is already 0\n");
 	}else{
@@ -29,7 +29,7 @@ void decrease_speedw(){
 	}
 }
 
-void increase_speedf(){
+void increase_speedf(){ //increase speed and print current speed in mode 1 , 2
 	if(speed+5 <= 100){
 		speed += 5;
 		printf("speed is increased to %d\n" , speed);
@@ -39,7 +39,7 @@ void increase_speedf(){
 	}
 }
 
-void decrease_speedf(){
+void decrease_speedf(){ //decrease speed and print current speed in mode 1, 2
 	if(speed == 0){
 		printf("speed is already 0\n");
 	}else{
@@ -48,12 +48,12 @@ void decrease_speedf(){
 	}
 }
 
-void increase_delay(){
+void increase_delay(){ //increase delay and prints current delay for mode 3 , 4
 	delay_time += 50;
 	printw("delay time is increased to %d\n" , delay_time);
 }
 
-void decrease_delay(){
+void decrease_delay(){ //increase delay and prints current delay for mode 3 , 4
 	delay_time -= 50;
 	if(delay_time < 0){
 		delay_time = 0;
@@ -78,19 +78,21 @@ void print_colourf(uint32_t red , uint32_t green , uint32_t blue , float redGree
 	printf( "Red Green diff:\t\t%0.2lf%\n", redGreenDiff);
 	printf( "Red Blue diff:\t\t%0.2lf%\n", redBlueDiff);
 	printf( "Blue Green diff:\t%0.2lf%\n", blueGreenDiff);
-	if(blueGreenDiff > 17.0){
-		if(mod(redGreenDiff - blueGreenDiff) < 6){
-			printf("RED\n");
-		}else{
-			printf("NEITHER\n");
-		}
-	}else{
+	if ((redBlueDiff < redGreenDiff) && (redBlueDiff < blueGreenDiff)) 
+	{
+		printf("RED!\n");
+
+	}else if(redGreenDiff < 4){
+		
+		printf("NEITHER!\n");
+	} 
+	else 
+	{
 		printf("GREEN!\n");
 	}
-	printf("\n");
 }
 
-float find_max(float redGreenDiff , float redBlueDiff , float blueGreenDiff){
+float find_max(float redGreenDiff , float redBlueDiff , float blueGreenDiff){ //find the max value among 3 parameters
 	if(redGreenDiff > redBlueDiff){
 		if(redGreenDiff > blueGreenDiff){
 			return redGreenDiff;
@@ -129,7 +131,7 @@ void print_colourw(uint32_t red , uint32_t green , uint32_t blue , float redGree
 	
 }
 
-void refresh_screen(){
+void refresh_screen(){ //clears screen and prints command list in mode 3 , 4
 	if(commands_sent != 0 && commands_sent % 5 == 0){
 		clear();
 		printw_commands();
