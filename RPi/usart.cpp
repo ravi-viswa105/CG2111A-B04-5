@@ -38,14 +38,12 @@ void handleResponse(TPacket *packet)
 	// The response code is stored in command
 	switch(packet->command)
 	{
-		case RESP_OK:
-			
+		case RESP_OK:	
 			if(keyboardMode == 3 || keyboardMode == 4){
 				printw("Command OK\n");
 			}else{
 				printf("Command OK\n");
 			}
-			clear_to_send_command = true;
 		break;
 
 		case RESP_STATUS:
@@ -127,9 +125,6 @@ void handlePacket(TPacket *packet)
 
 void sendPacket(TPacket *packet)
 {	
-	/*if(packet->packetType == PACKET_TYPE_COMMAND_KEYBOARD || packet->packetType == PACKET_TYPE_COMMAND_TIME || packet->packetType == PACKET_TYPE_COMMAND_PARAM){
-		clear_to_send_command = false;
-	}*/
 	char buffer[PACKET_SIZE];
 	int len = serialize(buffer, packet, sizeof(TPacket));
 
@@ -179,10 +174,10 @@ void getParams(TPacket *commandPacket)
 		break;
 	case 2 : 
 	case 3 :	
-	    	commandPacket->params[0] = speed;
+	    	commandPacket->params[0] = speed; //put current defined speed as a param to be sent to arduino for movement commands
 		break;
 	case 4:
-		commandPacket->params[0] = delay_time;
+		commandPacket->params[0] = delay_time; //put current defined delay as a param to be sent to arduino for movement commands
 		break;
 	default:
 		break;
@@ -196,7 +191,7 @@ void sendCommand(char command)
 	if (keyboardMode == 1) {
         	commandPacket.packetType = PACKET_TYPE_COMMAND_PARAM;
     	}else if(keyboardMode == 2 || keyboardMode == 3){
-        	commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD;
+        	commandPacket.packetType = PACKET_TYPE_COMMAND_KEYBOARD; //commands are handled similar for mode 2 & 3
     	}else{
 		commandPacket.packetType = PACKET_TYPE_COMMAND_TIME;
     	}
@@ -206,7 +201,7 @@ void sendCommand(char command)
         // Changing the movement mode
         case '1':
 	    if(keyboardMode == 3 || keyboardMode == 4){
-	    	endwin();
+	    	endwin(); // close window created by ncurse library
 	    }
 	    sleep(1);
             keyboardMode = 1;
@@ -215,7 +210,7 @@ void sendCommand(char command)
 
         case '2':
 	    if(keyboardMode == 3 || keyboardMode == 4){
-	    	endwin();
+	    	endwin(); // close window created by ncurse library
 	    }
 	    sleep(1);
             keyboardMode = 2;
@@ -224,7 +219,7 @@ void sendCommand(char command)
 
         case '3':
 	    if(keyboardMode == 1 || keyboardMode == 2){
-	    	initscr();
+	    	initscr(); //create window for ncurses
     	    	cbreak(); // Disable line buffering
             	noecho(); // Don't echo input characters
     	    	nodelay(stdscr, TRUE); // Set non-blocking mod
@@ -237,7 +232,7 @@ void sendCommand(char command)
 	
         case '4':
 	    if(keyboardMode == 1 || keyboardMode == 2){
-	    	initscr();
+	    	initscr(); //create window for ncurses
     	    	cbreak(); // Disable line buffering
             	noecho(); // Don't echo input characters
     	    	nodelay(stdscr, TRUE); // Set non-blocking mod
