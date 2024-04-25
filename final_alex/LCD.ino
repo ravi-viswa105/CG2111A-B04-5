@@ -42,6 +42,13 @@ void message_lcd(){
   lcd.write((byte)1);
 }
 
+void ultrasonic_message_lcd()
+{
+  lcd.setCursor(0, 0); //print message starts at cursor
+  lcd.print("Ultrasonic");
+  lcd.setCursor(0, 1);
+  lcd.print(ultrasonicDist);
+}
 
 
 
