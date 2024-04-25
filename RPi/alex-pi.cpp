@@ -28,12 +28,11 @@ using namespace std::chrono;
 
 int exitFlag=0;
 int commands_sent = 0;
-int speed = DEFAULT_SPEED;
+int speed = DEFAULT_SPEED; //set default speed to 40
 int delay_time = DEFAULT_DELAY;
 bool clear_to_send_command = true;
-// 1 for controlling with params, 2 for controlling with keypress
-int keyboardMode = 1 ;
-char previous_command = '0';
+int keyboardMode = 1 ; //set default keyboard mode
+char previous_command = '0'; //keep track of previous commands
 std::chrono::microseconds microsecond(1);
 high_resolution_clock::time_point start = high_resolution_clock::now();
 auto duration = duration_cast<microseconds>(high_resolution_clock::now() - start);
@@ -41,7 +40,7 @@ sem_t _xmitSema;
 
 //BAD MAGIC NUMBER HANDLING
 //Mode 1 : NIL
-//Mode 2 : 
+//Mode 2 : NIL
 //Mode 3 : No double commands
 //Mode 4 : Commands every 1 second
 
@@ -60,11 +59,11 @@ void PressAndPress(){//mode 3
 	//keeps polling for characters // characters must be not the same as the previous_commnd (cannot press w twice) // exception for '.' || 'v' || 'u' || ','
 	char ch = c;
 	
-	refresh_screen();	
+	refresh_screen(); //clears screen for window created by ncurses library	
 	if(ch == ','){
-		decrease_speedw();
+		decrease_speedw(); // decrease speed for mode 3
 	}else if(ch == '.'){
-		increase_speedw();
+		increase_speedw(); // increase speed for mode 3
 	}else{
         	printw("send command : %c\n" , ch);
         	refresh();
@@ -80,9 +79,9 @@ void TimedMovement(){//mode 4
 	char ch = c;
         refresh_screen();
 	if(ch == ','){
-		decrease_delay();
+		decrease_delay(); // decrease delay for timed movement
 	}else if(ch == '.'){
-		increase_delay();
+		increase_delay(); // increase delay for timed movement
 	}else{
 		printw("send command : %c\n" , ch);
 		sendCommand(ch);
@@ -94,7 +93,7 @@ void TimedMovement(){//mode 4
 
 void keypressControl() {
 	SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Keyboard Input", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 200, 200, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Keyboard Input", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 200, 200, SDL_WINDOW_SHOWN); //create the window for input
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Event event;
@@ -105,21 +104,21 @@ void keypressControl() {
 
     while (!quit) {
         while (SDL_PollEvent(&event) && !stop) {
-	    clear_to_send_command = true; //remove if want to test
+	    clear_to_send_command = true;
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
             else if (event.type == SDL_KEYUP){
 		 if(keyAlreadyPressed){
 		    auto key = event.key.keysym.sym;
-		    if(key != LEFT_ARROW_KEY && key != RIGHT_ARROW_KEY && key != SDLK_u && key != SDLK_k && key != SDLK_v){
-                    cout << "car stopped" << endl;
-		    sendCommand('o');
+		    if(key != LEFT_ARROW_KEY && key != RIGHT_ARROW_KEY && key != SDLK_u && key != SDLK_k && key != SDLK_v){ //if command key is released , stop the robot else dont care
+                    	cout << "car stopped" << endl;
+		    	sendCommand('o'); //stop the robot
 		    }
 		    keyAlreadyPressed = false;
 		 }
             }
-            else if (event.type == SDL_KEYDOWN && !keyAlreadyPressed){
+            else if (event.type == SDL_KEYDOWN && !keyAlreadyPressed){ // key press is detected
 		printf("clear to send command : %d\n" , clear_to_send_command);
 	    	if(!clear_to_send_command){
 			if(!informed){
@@ -131,8 +130,6 @@ void keypressControl() {
 		  informed = false;
                 	switch(event.key.keysym.sym){
 				case SDLK_1 :
-				case SDLK_3 :
-				case SDLK_4 :
                 	        	quit = true;
                         		stop = true;
 					keyboardMode = 1;
@@ -145,9 +142,9 @@ void keypressControl() {
 					increase_speedf();
 					break;
 				default :
-					const char* string=  SDL_GetKeyName(event.key.keysym.sym);	
-                        	        printf("send command : %c\n" , string[0]);
-					sendCommand(string[0]);
+					const char* string=  SDL_GetKeyName(event.key.keysym.sym); // see what key is pressed	
+                        	        printf("send command : %c\n" , string[0]); 
+					sendCommand(string[0]); // sends the char version
 
                	 	}
 	    	}
@@ -157,7 +154,7 @@ void keypressControl() {
         SDL_RenderPresent(renderer);
     }
     SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(window); // closes the window
     SDL_Quit();
 }
 
@@ -178,13 +175,11 @@ int main()
 	pthread_create(&recv, NULL, receiveThread, NULL);
 
 	// Send a hello packet
-	//printf("clear to send command : %d\n" , clear_to_send_command);
 	TPacket helloPacket;
 
 	helloPacket.packetType = PACKET_TYPE_HELLO;
 	sendPacket(&helloPacket);
 
-	//printf("clear to send command : %d\n" , clear_to_send_command);
 	while(!exitFlag)
 	{
 		if (keyboardMode == 1) {
